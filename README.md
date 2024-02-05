@@ -4,12 +4,20 @@
 > git clone https://github.com/Vinnybrunn00/Bot_Whatsapp_Sticker.git
 ```
 
+```shell
+> cd Bot_Whatsapp_Sticker
+```
+
 ## Cloning the repository in Windows
 
 - If you don't have Git installed on Windows, [install here](https://github.com/git-for-windows/git/releases/download/v2.37.1.windows.1/Git-2.37.1-64-bit.exe)
 
 ```shell
 > git clone https://github.com/Vinnybrunn00/Bot_Whatsapp_Sticker.git
+```
+
+```shell
+> cd Bot_Whatsapp_Sticker
 ```
 
 ## installation 
