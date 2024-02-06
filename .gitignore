@@ -6,4 +6,5 @@ node_modules
 COVID_HELPER.data.json
 _IGNORE_COVID_HELPER
 audio.mp3
-teste.js
+tests
+1.js

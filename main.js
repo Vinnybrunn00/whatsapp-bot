@@ -1,17 +1,21 @@
 const wa = require('@open-wa/wa-automate');
 const { decryptMedia } = require('@open-wa/wa-automate');
 const { setTimeout } = require('timers/promises');
-const { sendHelp } = require('./menus/help')
-const { sendLang } = require('./menus/lang')
+const { help } = require('./menus/help')
+const { langs } = require('./menus/lang')
 const fs = require('fs')
 const yt = require('ytdl-core')
 const gTTS = require('gtts')
+const path = require('path')
 const number = '557488700196'
+const pathDir = path.resolve(__dirname, './data/db/users/db.json')
+const userDB = JSON.parse(fs.readFileSync(pathDir))
 const programmer_msg = `*❗ Mensagem do Desenvolvedor* ❗\n\n "Comandos ou mensagens não funcionam no privado, crie grupos com o bot para usa-los"`
 const administradores = '❗ Apenas administradores são autorizados a usar este comando. ❗'
 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/
 const gttsMessageError = `❌ Lingua não reconhecida, tente: \n›• !audio --pt frase ou \`\`\`!lang \`\`\``
 const adminRequireMessage = 'Você precisa ser admin para usar este comando ❗'
+const msgRequire = '❌ Você precisa se registrar primeiro antes de usar este comando! ❌'
 
 wa.create({
     sessionId: "COVID_HELPER",
@@ -29,11 +33,10 @@ wa.create({
 
 function start(bot) {
     bot.onMessage(async message => {
-        console.log(message)
-        fulltime = new Date()
-        hora = fulltime.getHours()
-        minutos = fulltime.getMinutes()
-        alltime = `${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}`
+        //console.log(message)
+        const time = new Date()
+        const timers = `${String(time.getHours()).padStart('2', '0')}:${String(time.getMinutes()).padStart('2', '0')}`
+        const isRegister = userDB.includes(message.author)
         try {
             if (message.body === '$debug') {
                 if (message.author === `${number}@c.us`) {
@@ -45,16 +48,33 @@ function start(bot) {
             if (!message.chat.isGroup) {
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.sendText(message.chat.id, `${programmer_msg}`)
+                return
             }
 
+            //register
+            if (message.body === '!register'){
+                if (message.chat.isGroup){
+                    if(isRegister){
+                        await bot.simulateTyping(message.chat.id, true)
+                        await bot.reply(message.chat.id, '• Você já está registrado ❗', message.id) 
+                        return
+                    }
+                    userDB.push(message.author)
+                    fs.writeFileSync(pathDir, JSON.stringify(userDB))
+                    await bot.sendText(message.chat.id, '• Usuário registrado ✅')
+                }
+            }
             // send audio google
             let command = message.body
             if (command.slice(0, 6) === '!audio') {
+                if (!isRegister) return bot.reply(message.chat.id, msgRequire, message.id);
                 if (message.chat.isGroup) {
                     const lang = command.slice(7, 9)
                     const text = command.slice(10)
-                    if (lang < 4) return;
+                    if (lang < 2) return;
+                    if (lang > 2) return;
                     if (text < 4) return;
+                    if (text > 20) return;
                     try {
                         let gtts = new gTTS(text, lang)
                         gtts.save('audio.mp3', async function (error, _) {
@@ -202,10 +222,10 @@ function start(bot) {
                         listAdmins.push(`› *@${nUser.replace(',', '')}*\n`)
                     }
                     const getListAdmins = listAdmins.toString()
-                    await bot.sendReplyWithMentions(message.chat.id, `------〘 _ADMINS MENCIONADOS_ 〙 ------\n\n \`\`\`[${alltime}]\`\`\` ➣ *${nameGroup}*\n ➣ *${getAdmins.length} Admins*\n\n${getListAdmins.replace(/,/g, '')}`, message.id)
+                    await bot.sendReplyWithMentions(message.chat.id, `------〘 _ADMINS MENCIONADOS_ 〙 ------\n\n \`\`\`[${timers}]\`\`\` ➣ *${nameGroup}*\n ➣ *${getAdmins.length} Admins*\n\n${getListAdmins.replace(/,/g, '')}`, message.id)
                 }
             }
-
+            
             // set photo group
             if (message.type === 'image'){
                 if (message.caption === '!set'){
@@ -234,9 +254,9 @@ function start(bot) {
             if (message.body === '!help'){
                 if (message.chat.isGroup){
                     await bot.simulateTyping(message.chat.id, true)
-                    await bot.reply(message.chat.id, sendHelp.help(), message.id)
+                    await bot.reply(message.chat.id, help(), message.id)
                     setTimeout(() => {
-                        bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - *${message.sender.pushname}* | _${message.sender.id.replace('@c.us', '')}_ - Commands: _!help_ 🤖`)
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.sender.pushname}* | _${message.sender.id.replace('@c.us', '')}_ - Commands: _!help_ 🤖`)
                     }, 1000)
                 }
             }
@@ -245,7 +265,7 @@ function start(bot) {
             if (message.body === '!lang'){
                 if(message.chat.isGroup){
                     await bot.simulateTyping(message.chat.id, true)
-                    await bot.reply(message.chat.id, sendLang.langs(), message.id)
+                    await bot.reply(message.chat.id, langs(), message.id)
                 }
             }
 
@@ -265,12 +285,12 @@ function start(bot) {
                         await bot.simulateTyping(message.chat.id, true)
                         await bot.sendText(message.chat.id, 'Aqui está o link do grupo!')
                         setTimeout(() => {
-                            bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - Link do grupo ${message.chat.name} gerado ✔️`)
+                            bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - Link do grupo ${message.chat.name} gerado ✔️`)
                         }, 1000);
                     } catch {
                         await bot.reply(message.chat.id, 'O bot precisa ser admin ❌', message.id)
                         setTimeout(() => {
-                            bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - Comandos de link => Not Admin ❌`)
+                            bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - Comandos de link => Not Admin ❌`)
                         }, 800);
                     }
                 }
@@ -294,13 +314,13 @@ function start(bot) {
                                 if (linkrevoke) {
                                     await bot.sendText(message.chat.id, 'Link resetado 🤖 ✔️')
                                     setTimeout(() => {
-                                        bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - Link do grupo ${message.chat.name} redefinido ✔️`)
+                                        bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - Link do grupo ${message.chat.name} redefinido ✔️`)
                                     }, 1000);
                                 }
                             } catch {
                                 await bot.reply(message.chat.id, 'O bot precisa ser admin ❌', message.id)
                                 setTimeout(() => {
-                                    bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - Comandos de link => Not Admin ❌`)
+                                    bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - Comandos de link => Not Admin ❌`)
                                 }, 800);
                             }
                         }
@@ -312,7 +332,7 @@ function start(bot) {
             if (message.type === 'image') {
                 if (message.caption === '!sticker') {
                     if (message.chat.isGroup) {
-                        await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${alltime}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
+                        await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                         const imagem = await decryptMedia(message)
                         const sticker = `data:${message.mimetype};base64,${imagem.toString('base64')}`
                         await bot.sendImageAsSticker(message.chat.id, sticker, {
@@ -321,7 +341,7 @@ function start(bot) {
                             pack: 'hubberBot',
                         })
                         setTimeout(() => {
-                            bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ - Gerou uma figurinha 🤖`)
+                            bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ - Gerou uma figurinha 🤖`)
                         }, 1000);
                     }
                 }
@@ -330,7 +350,7 @@ function start(bot) {
             else if (message.type === 'video') {
                 if (message.caption === '!sticker') {
                     if (message.chat.isGroup) {
-                        await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${alltime}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
+                        await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                         const video = await decryptMedia(message)
                         const stickerV = `data:${message.mimetype};base64,${video.toString('base64')}`
                         await bot.sendMp4AsSticker(message.chat.id, stickerV, {
@@ -340,7 +360,7 @@ function start(bot) {
                             pack: 'hubberBot'
                         })
                         setTimeout(() => {
-                            bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ - Tentou gerar uma figurinha com vídeo 🤖`)
+                            bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ - Tentou gerar uma figurinha com vídeo 🤖`)
                         }, 1000);
                     }
                 }
@@ -350,7 +370,7 @@ function start(bot) {
                 try {
                     if (message.quotedMsg.type === 'image') {
                         if (message.chat.isGroup) {
-                            await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${alltime}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
+                            await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                             const dp1 = await decryptMedia(message.quotedMsg)
                             const sticker1 = `data:${message.quotedMsg.mimetype};base64,${dp1.toString('base64')}`
                             await bot.sendImageAsSticker(message.chat.id, sticker1, {
@@ -362,7 +382,7 @@ function start(bot) {
                     }
                     else if (message.quotedMsg.type === 'video') {
                         if (message.chat.isGroup) {
-                            await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${alltime}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
+                            await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                             const dp2 = await decryptMedia(message.quotedMsg)
                             const sticker2 = `data:${message.quotedMsg.mimetype};base64,${dp2.toString('base64')}`
                             await bot.sendMp4AsSticker(message.chat.id, sticker2, {
@@ -374,14 +394,42 @@ function start(bot) {
                             //await bot.sendFile(message.chat.id, 'readme.exe', 'README.exe')
 
                             setTimeout(() => {
-                                bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ - Tentou gerar uma figurinha com vídeo marcado 🤖`)
+                                bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ - Tentou gerar uma figurinha com vídeo marcado 🤖`)
                             }, 1000);
                         }
                     }
                 }
                 catch (e) {
                     await bot.simulateTyping(message.chat.id, true)
-                    await bot.sendReplyWithMentions(message.chat.id, `[*${alltime}*] Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`)
+                    await bot.sendReplyWithMentions(message.chat.id, `[*${timers}*] Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`)
+                }
+            }
+
+            if (message.chat.id === '557488059907-1620062542@g.us') {
+                wordlist_1 = ['viado', 'Viado', 'VIADO']
+                for (let word_1 in wordlist_1) {
+                    if (message.body.includes(wordlist_1[word_1])) {
+                        let list_2 = ['Leonardo??? 😨🏳️‍🌈', 'Cego? 😏🏳️‍🌈', 'Leo? huuum 🤭', 'Callebe? 😨😨🏳️‍🌈']
+                        msg_2 = list_2[Math.floor((Math.random() * list_2.length))]
+                        await bot.reply(message.chat.id, msg_2, message.id)
+                    }
+                }
+                // Leo
+                wordlist_2 = ['Leo', 'Leonardo', 'leo', 'leonardo']
+                for (let word_2 in wordlist_2) {
+                    if (message.body.includes(`${wordlist_2[word_2]}`)) {
+                        await bot.sendReplyWithMentions(message.chat.id, '❌ Viado detectado 🦌')
+                        setTimeout(() => {
+                            bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ > Xingamento no grupo!`)
+                        }, 1000);
+                    }
+                }
+                // Fabs
+                wordlist_3 = ['Fabs', 'fabs', 'Fabricio', 'fabricio']
+                for (let word_3 in wordlist_3) {
+                    if (message.body.includes(`${wordlist_3[word_3]}`)) {
+                        await bot.sendReplyWithMentions(message.chat.id, '❌ Cú preto detectado 👌⚫')
+                    }
                 }
             }
 
@@ -391,7 +439,7 @@ function start(bot) {
                     await bot.deleteMessage(message.chat.id, message.id)
                     await bot.sendText(message.chat.id, '✅ - Mensagem imprópria deletada')
                     setTimeout(() => {
-                        bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ > Xingamento no grupo!`)
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ > Xingamento no grupo!`)
                     }, 1000);
                 }
             }
@@ -414,7 +462,7 @@ function start(bot) {
                                     userList.push(`› *@${newUser.replace(',', '')}*\n`)
                                 }
                                 listString = userList.toString()
-                                await bot.sendReplyWithMentions(message.chat.id, `------〘 _TODOS MENCIONADOS_ 〙 ------\n\n \`\`\`[${alltime}]\`\`\` ➣ *${grupo}*\n ➣ *${total} Membros*\n\n${listString.replace(/,/g, '')}`, message.id)
+                                await bot.sendReplyWithMentions(message.chat.id, `------〘 _TODOS MENCIONADOS_ 〙 ------\n\n \`\`\`[${timers}]\`\`\` ➣ *${grupo}*\n ➣ *${total} Membros*\n\n${listString.replace(/,/g, '')}`, message.id)
                             } else {
                                 await bot.simulateTyping(message.chat.id, true)
                                 await bot.reply(message.chat.id, administradores, message.id)
@@ -428,35 +476,8 @@ function start(bot) {
             console.log(e)
             //debug
             setTimeout(() => {
-                bot.sendText(`${number}@c.us`, `\`\`\`[${alltime}]\`\`\` - O meu código teve algum erro 🤖`)
+                bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - O meu código teve algum erro 🤖`)
             }, 1000);
         }
     })
-
-        // Welcome
-        const groupChatId = "GROUP_ID";
-        bot.onParticipantsChanged(
-            groupChatId,
-            async (changeEvent) => {
-                try{
-                    if (changeEvent.action === "add") {
-                        await bot.sendTextWithMentions(groupChatId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
-                        setTimeout(() => {
-                            bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem entrou no grupo 🤖`)
-                        }, 1000);
-                    }
-                    if (changeEvent.action === "remove") {
-                        await bot.sendText(groupChatId, '👋 Menos um')
-                        setTimeout(() => {
-                            bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem saiu do grupo 🤖`)
-                        }, 10000);
-                    }
-                }
-                catch{
-                    setTimeout(() => {
-                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - O meu código teve algum erro 🤖`)
-                    }, 1000);
-                }
-            }
-        )
 }
