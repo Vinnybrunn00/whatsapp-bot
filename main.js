@@ -3,6 +3,7 @@ const { decryptMedia } = require('@open-wa/wa-automate');
 const { setTimeout } = require('timers/promises');
 const { help } = require('./menus/help')
 const { langs } = require('./menus/lang')
+const tesseract = require('node-tesseract-ocr')
 const fs = require('fs')
 const yt = require('ytdl-core')
 const gTTS = require('gtts')
@@ -28,8 +29,18 @@ wa.create({
     logConsole: false,
     popup: true,
     useChrome: true,
-    qrTimeout: 0, //0 means it will wait forever for you to scan the qr code
+    qrTimeout: 0,
+    messagePreprocessor: "AUTO_DECRYPT_SAVE",
+    preprocFilter: "m=> m.caption===`!scan` && m.type===`image`"
 }).then(bot => start(bot));
+
+async function extract(img){
+    if (img){
+        const text = await tesseract.recognize(img, {lang: "por"})
+        return text
+    }
+    return false
+}
 
 function start(bot) {
     bot.onMessage(async message => {
@@ -47,7 +58,11 @@ function start(bot) {
 
             if (!message.chat.isGroup) {
                 await bot.simulateTyping(message.chat.id, true)
+<<<<<<< HEAD
                 await bot.sendText(message.chat.id, `${programmer_msg}`)
+=======
+                await bot.sendText(message.chat.id, programmer_msg)
+>>>>>>> 4e78f7e18b15ddc63b8db23d202e6e4ca9c6f397
                 return;
             }
 
@@ -64,6 +79,7 @@ function start(bot) {
                     await bot.sendText(message.chat.id, '• Usuário registrado ✅')
                 }
             }
+
             // send audio google
             let command = message.body
             if (command.slice(0, 4) === '!add'){
@@ -99,7 +115,7 @@ function start(bot) {
             }
 
             if (command.slice(0, 6) === '!audio') {
-                if (!isRegister) return bot.reply(message.chat.id, msgRequire, message.id);
+                if (!isRegister) return await bot.reply(message.chat.id, msgRequire, message.id);
                 if (message.chat.isGroup) {
                     const lang = command.slice(7, 9)
                     const text = command.slice(10)
@@ -131,14 +147,10 @@ function start(bot) {
                     if (match && match[2].length == 11) {
                         try {
                             yt(link, { filter: 'videoandaudio', format: "mp4" }).pipe(fs.createWriteStream('download.mp4')).on('finish', async () => {
-                                //let content = `\`\`\`[${alltime}] - Baixando do YouTube...\n\n\`\`\` › *${title}*\n\nAguarde...⌛`
-                                //let urlTumb = info.videoDetails.thumbnails[3].url
-
-                                //await bot.sendImage(message.chat.id, urlTumb, {caption: content})
                                 await bot.sendFile(message.chat.id, 'download.mp4', "download", 'video')
                             })
                         } catch (err) {
-                            console.log(err)
+                            await bot.simulateTyping(message.chat.id, true)
                             await bot.sendReplyWithMentions(message.chat.id, '❌ Erro ao baixar o vídeo, tente novamente. ❌', message.id)
                         }
                     }
@@ -150,9 +162,9 @@ function start(bot) {
                 if (message.chat.isGroup){
                     let participantId = command.slice(9)
                     let participants = message.chat.groupMetadata.participants
-                    for (let members in participants){
-                        const isAdmin = participants[members]['isAdmin']
-                        const getId = participants[members]['id']
+                    for (let i = 0; i < participants.length; i++){
+                        const isAdmin = participants[i]['isAdmin']
+                        const getId = participants[i]['id']
                         try{
                             if (message.author === getId){
                                 if (!isAdmin) {
@@ -183,10 +195,9 @@ function start(bot) {
                 if (message.chat.isGroup){
                     let participantId = command.slice(8)
                     let participants = message.chat.groupMetadata.participants
-                    let pid = `${participantId}`
-                    for (let members in participants){
-                        const isAdmin = participants[members]['isAdmin']
-                        const getId = participants[members]['id']
+                    for (let i = 0; i < participants.length; i++){
+                        const isAdmin = participants[i]['isAdmin']
+                        const getId = participants[i]['id']
                         try{
                             if (message.author === getId){
                                 if (!isAdmin) {
@@ -198,10 +209,10 @@ function start(bot) {
                                 if (!isAdmin) {
                                     await bot.simulateTyping(message.chat.id, true)
                                     await bot.reply(message.chat.id, 'O bot precisa ser adm', message.id)
-                                    return
+                                    return;
                                 } 
                                 await bot.demoteParticipant(message.chat.id, `${participantId.replace('@', '')}@c.us`)
-                                await bot.sendTextWithMentions(message.chat.id, `• ${pid} Não é mais um administrador ❌`)
+                                await bot.sendTextWithMentions(message.chat.id, `• ${participantId} Não é mais um administrador ❌`)
                             }
                         } catch {
                             await bot.simulateTyping(message.chat.id, true)
@@ -217,9 +228,9 @@ function start(bot) {
                     const listAdm = await message.chat.groupMetadata.participants
                     const setDesc = command.slice(9)
                     if (setDesc < 1) return;
-                    for (let adm in listAdm){
-                        const users = listAdm[adm]['id']
-                        const isAdmin = listAdm[adm]['isAdmin']
+                    for (let i = 0; i < listAdm.length; i++){
+                        const users = listAdm[i]['id']
+                        const isAdmin = listAdm[i]['isAdmin']
                         if (message.author === users){
                             if (!isAdmin){
                                 await bot.simulateTyping(message.chat.id)
@@ -248,13 +259,34 @@ function start(bot) {
                     const nameGroup = message.chat.name
                     const getAdmins = await bot.getGroupAdmins(message.chat.id)
                     let listAdmins = []
-                    for (let admins in getAdmins){
-                        const users = getAdmins[admins]
+                    for (let i = 0; i < getAdmins.length; i++){
+                        const users = getAdmins[i]
                         const nUser = users.replace('@c.us', '')
                         listAdmins.push(`› *@${nUser.replace(',', '')}*\n`)
                     }
                     const getListAdmins = listAdmins.toString()
                     await bot.sendReplyWithMentions(message.chat.id, `------〘 _ADMINS MENCIONADOS_ 〙 ------\n\n \`\`\`[${timers}]\`\`\` ➣ *${nameGroup}*\n ➣ *${getAdmins.length} Admins*\n\n${getListAdmins.replace(/,/g, '')}`, message.id)
+                }
+            }
+
+            if (message.type === 'image'){
+                if (message.caption === '!scan'){
+                    if (message.chat.isGroup){
+                        try{
+                            const pathMedia = path.resolve('./media')
+                            const image = fs.readdirSync(pathMedia)
+                            for (let i = 0; i < image.length; i++){
+                                const getImage = `${pathMedia}/${image[i]}`
+                                const getText = await extract(getImage)
+                                
+                                await bot.reply(message.chat.id, getText, message.id)
+                                return fs.unlinkSync(getImage)
+                            }
+                        } catch {
+                            await bot.simulateTyping(message.chat.id, true)
+                            await bot.reply(message.chat.id, '• Erro ao converter imagem para texto, tente novamente')
+                        }
+                    }
                 }
             }
             
@@ -263,9 +295,9 @@ function start(bot) {
                 if (message.caption === '!set'){
                     if(message.chat.isGroup){
                         const participants = message.chat.groupMetadata.participants
-                        for (members in participants){
-                            const isAdmin = participants[members]['isAdmin']
-                            const getId = participants[members]['id']
+                        for (let i = 0; i < participants.length; i++){
+                            const isAdmin = participants[i]['isAdmin']
+                            const getId = participants[i]['id']
                             if (message.author === getId){
                                 if (!isAdmin){
                                     await bot.simulateTyping(message.chat.id, true)
@@ -332,9 +364,9 @@ function start(bot) {
             if (message.body === '!revogar') {
                 if (message.chat.isGroup) {
                     const participants = message.chat.groupMetadata.participants
-                    for (const members in participants){
-                        const isAdmin = participants[members]['isAdmin']
-                        const getId = participants[members]['id']
+                    for (let i = 0; i < participants.length; i++){
+                        const isAdmin = participants[i]['isAdmin']
+                        const getId = participants[i]['id']
                         if (message.author === getId){
                             if (!isAdmin){
                                 await bot.simulateTyping(message.chat.id, true)
@@ -438,18 +470,18 @@ function start(bot) {
             }
 
             if (message.chat.id === '557488059907-1620062542@g.us') {
-                wordlist_1 = ['viado', 'Viado', 'VIADO']
-                for (let word_1 in wordlist_1) {
-                    if (message.body.includes(wordlist_1[word_1])) {
-                        let list_2 = ['Leonardo??? 😨🏳️‍🌈', 'Cego? 😏🏳️‍🌈', 'Leo? huuum 🤭', 'Callebe? 😨😨🏳️‍🌈']
+                const wordlist_1 = ['viado', 'Viado', 'VIADO']
+                for (let i = 0; i < wordlist_1.length; i++) {
+                    if (message.body.includes(wordlist_1[i])) {
+                        let list_2 = ['Leonardo??? 😨🏳️‍🌈', 'Cego? 😏🏳️‍🌈', 'Leo? huuum 🤭']
                         msg_2 = list_2[Math.floor((Math.random() * list_2.length))]
                         await bot.reply(message.chat.id, msg_2, message.id)
                     }
                 }
                 // Leo
-                wordlist_2 = ['Leo', 'Leonardo', 'leo', 'leonardo']
-                for (let word_2 in wordlist_2) {
-                    if (message.body.includes(`${wordlist_2[word_2]}`)) {
+                const wordlist_2 = ['Leo', 'Leonardo', 'leo', 'leonardo']
+                for (let i = 0; i < wordlist_2.length; i++) {
+                    if (message.body.includes(`${wordlist_2[i]}`)) {
                         await bot.sendReplyWithMentions(message.chat.id, '❌ Viado detectado 🦌')
                         setTimeout(() => {
                             bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ > Xingamento no grupo!`)
@@ -457,17 +489,17 @@ function start(bot) {
                     }
                 }
                 // Fabs
-                wordlist_3 = ['Fabs', 'fabs', 'Fabricio', 'fabricio']
-                for (let word_3 in wordlist_3) {
-                    if (message.body.includes(`${wordlist_3[word_3]}`)) {
+                const wordlist_3 = ['Fabs', 'fabs', 'Fabricio', 'fabricio']
+                for (let i = 0; i < wordlist_3.length; i++) {
+                    if (message.body.includes(`${wordlist_3[i]}`)) {
                         await bot.sendReplyWithMentions(message.chat.id, '❌ Cú preto detectado 👌⚫')
                     }
                 }
             }
 
-            list_impropes = []
-            for (let impropes in list_impropes) {
-                if (message.body.includes(`${list_impropes[impropes]}`)) {
+            const impropes = []
+            for (let i = 0; i < impropes.length; i++) {
+                if (message.body.includes(`${impropes[i]}`)) {
                     await bot.deleteMessage(message.chat.id, message.id)
                     await bot.sendText(message.chat.id, '✅ - Mensagem imprópria deletada')
                     setTimeout(() => {
@@ -479,17 +511,17 @@ function start(bot) {
             // all mentions
             if (message.body === '!all') {
                 if (message.chat.isGroup) {
-                    num = message.chat.groupMetadata.participants
-                    for (membros in num) {
-                        admin = num[membros]['isAdmin']
-                        ids = num[membros]['id']
-                        grupo = message.chat.name
-                        total = message.chat.participantsCount
+                    const participants = message.chat.groupMetadata.participants
+                    for (let i = 0; i < participants.length; i++) {
+                        const admin = participants[i]['isAdmin']
+                        const ids = participants[i]['id']
+                        const grupo = message.chat.name
+                        const total = message.chat.participantsCount
                         if (message.author === ids) {
                             if (admin) {
                                 userList = []
-                                for (usuarios in num) {
-                                    users = num[usuarios]['id']
+                                for (let j = 0; j < participants.length; j++) {
+                                    users = participants[j]['id']
                                     newUser = users.replace('@c.us', '')
                                     userList.push(`› *@${newUser.replace(',', '')}*\n`)
                                 }
@@ -505,11 +537,37 @@ function start(bot) {
             }
         }
         catch (e) {
-            console.log(e)
             //debug
             setTimeout(() => {
                 bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - O meu código teve algum erro 🤖`)
             }, 1000);
         }
     })
+    
+    // welcome
+    const groupChatId = "";
+    bot.onParticipantsChanged(
+        groupChatId,
+        async (changeEvent) => {
+            try{
+                if (changeEvent.action === "add") {
+                    await bot.sendTextWithMentions(groupChatId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
+                    setTimeout(() => {
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem entrou no grupo 🤖`)
+                    }, 1000);
+                }
+                if (changeEvent.action === "remove") {
+                    await bot.sendText(groupChatId, '👋 Menos um')
+                    setTimeout(() => {
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem saiu do grupo 🤖`)
+                    }, 1000);
+                }
+            }
+            catch{
+                setTimeout(() => {
+                    bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - O meu código teve algum erro 🤖`)
+                }, 1000);
+            }
+        }
+    )
 }

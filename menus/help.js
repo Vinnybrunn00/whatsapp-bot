@@ -56,6 +56,9 @@ const help = () => {
     ├─ › !set [imagem]
     │   Sobre: *Atualiza a imagem do grupo*
     │
+    ├─ › !scan [imagem]
+    │   Sobre: *Extrai texto de uma imagem*
+    │
     └─────────────
 
 • _Outros_
