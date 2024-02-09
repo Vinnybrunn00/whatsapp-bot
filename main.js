@@ -7,7 +7,7 @@ const fs = require('fs')
 const yt = require('ytdl-core')
 const gTTS = require('gtts')
 const path = require('path')
-const number = '557488700196'
+const number = ''
 const pathDir = path.resolve(__dirname, './data/db/users/db.json')
 const userDB = JSON.parse(fs.readFileSync(pathDir))
 const programmer_msg = `*❗ Mensagem do Desenvolvedor* ❗\n\n "Comandos ou mensagens não funcionam no privado, crie grupos com o bot para usa-los"`
@@ -48,7 +48,7 @@ function start(bot) {
             if (!message.chat.isGroup) {
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.sendText(message.chat.id, `${programmer_msg}`)
-                return
+                return;
             }
 
             //register
@@ -57,7 +57,7 @@ function start(bot) {
                     if(isRegister){
                         await bot.simulateTyping(message.chat.id, true)
                         await bot.reply(message.chat.id, '• Você já está registrado ❗', message.id) 
-                        return
+                        return;
                     }
                     userDB.push(message.author)
                     fs.writeFileSync(pathDir, JSON.stringify(userDB))
@@ -66,21 +66,53 @@ function start(bot) {
             }
             // send audio google
             let command = message.body
+            if (command.slice(0, 4) === '!add'){
+                if (message.chat.isGroup){
+                    try{
+                        const addNumber = command.slice(5)
+                        const isAdd = await bot.addParticipant(message.chat.id, `${addNumber}@c.us`)
+                        if(isAdd){
+                            await bot.simulateTyping(message.chat.id, true)
+                            await bot.sendText(message.chat.id, '• Novo usuário adicionado ✅')
+                            return;
+                        }
+                    } catch {
+                        await bot.simulateTyping(message.chat.id, true)
+                        await bot.sendText(message.chat.id, '• Ocorreu algum problema ao adicionar o usuário, tente novamente ❌')
+                    }
+                }
+            }
+
+            if(command.slice(0, 7) === '!remove'){
+                if (message.chat.isGroup){
+                    try{
+                        const removeNumber = command.slice(8)
+                        const isRemove = await bot.removeParticipant(message.chat.id, `${removeNumber}@c.us`)
+                        if (isRemove){
+                            await bot.sendText(message.chat.id, '• Usuário removido ✅')
+                        }
+                    } catch {
+                        await bot.simulateTyping(message.chat.id, true)
+                        await bot.sendText(message.chat.id, '• Ocorreu algum problema ao remover o usuário, tente novamente ❌')
+                    }
+                }
+            }
+
             if (command.slice(0, 6) === '!audio') {
                 if (!isRegister) return bot.reply(message.chat.id, msgRequire, message.id);
                 if (message.chat.isGroup) {
                     const lang = command.slice(7, 9)
                     const text = command.slice(10)
-                    if (lang < 2) return;
-                    if (lang > 2) return;
-                    if (text < 4) return;
-                    if (text > 20) return;
+                    if (lang.length < 2) return;
+                    if (lang.length > 2) return;
+                    if (text.length < 4) return;
+                    if (text.length > 20) return;
                     try {
                         let gtts = new gTTS(text, lang)
                         gtts.save('audio.mp3', async function (error, _) {
                             if (error) {
                                 await bot.sendText(message.chat.id, '❌ Erro ao converter áudio, tente novamente ❌')
-                                return
+                                return;
                             }
                             await bot.simulateRecording(message.chat.id, true)
                             await bot.sendPtt(message.chat.id, 'audio.mp3', message.id)
