@@ -57,8 +57,8 @@ Full API documentation [here](https://github.com/open-wa/wa-automate-nodejs)
 |       ✅        |   Send Link Group                |
 |       ✅        |   Owner bot                      |
 |       ✅        |   Swearing - Delete message      |
-|       ✅        |   Add Member Group	            |
-|       ✅        |   Kick Member Group	            |
+|       ❌        |   Add Member Group	            |
+|       ❌        |   Kick Member Group	            |
 |       ✅        |   Send Audio With Google Voice   |
 |       ✅        |   Send Code Language	            |
 |       ✅        |   Download Video YouTube	        |

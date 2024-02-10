@@ -8,15 +8,16 @@ const fs = require('fs')
 const yt = require('ytdl-core')
 const gTTS = require('gtts')
 const path = require('path')
-const number = ''
+const number = '557488700196'
 const pathDir = path.resolve(__dirname, './data/db/users/db.json')
 const userDB = JSON.parse(fs.readFileSync(pathDir))
 const programmer_msg = `*❗ Mensagem do Desenvolvedor* ❗\n\n "Comandos ou mensagens não funcionam no privado, crie grupos com o bot para usa-los"`
 const administradores = '❗ Apenas administradores são autorizados a usar este comando. ❗'
 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/
 const gttsMessageError = `❌ Lingua não reconhecida, tente: \n›• !audio --pt frase ou \`\`\`!lang \`\`\``
-const adminRequireMessage = 'Você precisa ser admin para usar este comando ❗'
+const userAdminRequireMsg = '• Você precisa ser admin para usar este comando ❗'
 const msgRequire = '❌ Você precisa se registrar primeiro antes de usar este comando! ❌'
+const botAdminRequireMsg = '• O bot precisa ser admin para executar este comando ❗'
 
 wa.create({
     sessionId: "COVID_HELPER",
@@ -34,9 +35,9 @@ wa.create({
     preprocFilter: "m=> m.caption===`!scan` && m.type===`image`"
 }).then(bot => start(bot));
 
-async function extract(img){
-    if (img){
-        const text = await tesseract.recognize(img, {lang: "por"})
+async function extract(img) {
+    if (img) {
+        const text = await tesseract.recognize(img, { lang: "por" })
         return text
     }
     return false
@@ -58,20 +59,16 @@ function start(bot) {
 
             if (!message.chat.isGroup) {
                 await bot.simulateTyping(message.chat.id, true)
-<<<<<<< HEAD
-                await bot.sendText(message.chat.id, `${programmer_msg}`)
-=======
                 await bot.sendText(message.chat.id, programmer_msg)
->>>>>>> 4e78f7e18b15ddc63b8db23d202e6e4ca9c6f397
                 return;
             }
 
             //register
-            if (message.body === '!register'){
-                if (message.chat.isGroup){
-                    if(isRegister){
+            if (message.body === '!register') {
+                if (message.chat.isGroup) {
+                    if (isRegister) {
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, '• Você já está registrado ❗', message.id) 
+                        await bot.reply(message.chat.id, '• Você já está registrado ❗', message.id)
                         return;
                     }
                     userDB.push(message.author)
@@ -82,34 +79,70 @@ function start(bot) {
 
             // send audio google
             let command = message.body
-            if (command.slice(0, 4) === '!add'){
-                if (message.chat.isGroup){
-                    try{
-                        const addNumber = command.slice(5)
-                        const isAdd = await bot.addParticipant(message.chat.id, `${addNumber}@c.us`)
-                        if(isAdd){
+            if (command.slice(0, 4) === '!add') {
+                if (message.chat.isGroup) {
+                    const participants = message.chat.groupMetadata.participants
+                    for (let i = 0; i < participants.length; i++) {
+                        const isAdmin = participants[i]['isAdmin']
+                        const getUser = participants[i]['id']
+                        if (message.author === getUser) {
+                            if (isAdmin) {
+                                try {
+                                    if (message.to === getUser) {
+                                        if (isAdmin) {
+                                            const addNumber = command.slice(5)
+                                            const isAdd = await bot.addParticipant(message.chat.id, addNumber)
+                                            if (isAdd) {
+                                                await bot.simulateTyping(message.chat.id, true)
+                                                await bot.sendText(message.chat.id, '• Novo usuário adicionado ✅')
+                                                return;
+                                            }
+                                        }
+                                        await bot.simulateTyping(message.chat.id, true)
+                                        await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
+                                        return;
+                                    }
+                                } catch {
+                                    await bot.simulateTyping(message.chat.id, true)
+                                    await bot.sendText(message.chat.id, '• Ocorreu algum problema ao adicionar o usuário, tente novamente ❌')
+                                    return;
+                                }
+                            }
                             await bot.simulateTyping(message.chat.id, true)
-                            await bot.sendText(message.chat.id, '• Novo usuário adicionado ✅')
+                            await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
                             return;
                         }
-                    } catch {
-                        await bot.simulateTyping(message.chat.id, true)
-                        await bot.sendText(message.chat.id, '• Ocorreu algum problema ao adicionar o usuário, tente novamente ❌')
                     }
                 }
             }
 
-            if(command.slice(0, 7) === '!remove'){
+            if (command.slice(0, 7) === '!remove'){
                 if (message.chat.isGroup){
-                    try{
-                        const removeNumber = command.slice(8)
-                        const isRemove = await bot.removeParticipant(message.chat.id, `${removeNumber}@c.us`)
-                        if (isRemove){
-                            await bot.sendText(message.chat.id, '• Usuário removido ✅')
+                    const participants = message.chat.groupMetadata.participants
+                    for (i = 0; i < participants.length; i++){
+                        const isAdmin = participants[i]['isAdmin']
+                        const getUser = participants[i]['id']
+                        if (message.author === getUser){
+                            if (isAdmin){
+                                if (message.to === getUser){
+                                    if (isAdmin){
+                                        const kickNumber = command.slice(8)
+                                        const isRemove = await bot.removeParticipant(message.chat.id, `${kickNumber.replace('@', '')}@c.us`)
+                                        if (isRemove){
+                                            await bot.simulateTyping(message.chat.id, true)
+                                            await bot.sendText(message.chat.id, '• Usuário removido ✅')
+                                            return;
+                                        }
+                                    }
+                                    await bot.simulateTyping(message.chat.id, true)
+                                    await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
+                                    return;
+                                }
+                            }
+                            await bot.simulateTyping(message.chat.id, true)
+                            await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
+                            return;
                         }
-                    } catch {
-                        await bot.simulateTyping(message.chat.id, true)
-                        await bot.sendText(message.chat.id, '• Ocorreu algum problema ao remover o usuário, tente novamente ❌')
                     }
                 }
             }
@@ -119,10 +152,10 @@ function start(bot) {
                 if (message.chat.isGroup) {
                     const lang = command.slice(7, 9)
                     const text = command.slice(10)
-                    if (lang.length < 2) return;
-                    if (lang.length > 2) return;
-                    if (text.length < 4) return;
-                    if (text.length > 20) return;
+                    if (lang < 2) return;
+                    if (lang > 2) return;
+                    if (text < 4) return;
+                    if (text > 20) return;
                     try {
                         let gtts = new gTTS(text, lang)
                         gtts.save('audio.mp3', async function (error, _) {
@@ -158,29 +191,30 @@ function start(bot) {
             }
 
             // promote participant
-            if (command.slice(0, 8) === '!promote'){
-                if (message.chat.isGroup){
+            if (command.slice(0, 8) === '!promote') {
+                if (message.chat.isGroup) {
                     let participantId = command.slice(9)
                     let participants = message.chat.groupMetadata.participants
-                    for (let i = 0; i < participants.length; i++){
+                    for (let i = 0; i < participants.length; i++) {
                         const isAdmin = participants[i]['isAdmin']
                         const getId = participants[i]['id']
-                        try{
-                            if (message.author === getId){
-                                if (!isAdmin) {
-                                    await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, adminRequireMessage, message.id)
-                                    return;
+                        try {
+                            if (message.author === getId) {
+                                if (isAdmin) {
+                                    if (message.to === getId) {
+                                        if (isAdmin) {
+                                            await bot.promoteParticipant(message.chat.id, `${participantId.replace('@', '')}@c.us`)
+                                            await bot.sendTextWithMentions(message.chat.id, `• ${participants} agora é um administrador ✅`)
+                                            return;
+                                        }
+                                        await bot.simulateTyping(message.chat.id, true)
+                                        await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
+                                        return;
+                                    }
                                 }
-                            }
-                            if (message.to === getId){
-                                if (!isAdmin) {
-                                    await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, 'O bot precisa ser adm', message.id)
-                                    return;
-                                } 
-                                await bot.promoteParticipant(message.chat.id, `${participantId.replace('@', '')}@c.us`)
-                                await bot.sendTextWithMentions(message.chat.id, `• ${participants} agora é um administrador ✅`)
+                                await bot.simulateTyping(message.chat.id, true)
+                                await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
+                                return;
                             }
                         } catch {
                             await bot.simulateTyping(message.chat.id, true)
@@ -188,31 +222,37 @@ function start(bot) {
                         }
                     }
                 }
-            } 
+            }
 
             // demote participant
-            if (command.slice(0, 7) === '!demote'){
-                if (message.chat.isGroup){
+            if (command.slice(0, 7) === '!demote') {
+                if (message.chat.isGroup) {
                     let participantId = command.slice(8)
                     let participants = message.chat.groupMetadata.participants
-                    for (let i = 0; i < participants.length; i++){
+                    for (let i = 0; i < participants.length; i++) {
                         const isAdmin = participants[i]['isAdmin']
                         const getId = participants[i]['id']
-                        try{
-                            if (message.author === getId){
-                                if (!isAdmin) {
-                                    await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, adminRequireMessage, message.id)
+                        try {
+                            if (message.author === getId) {
+                                if (isAdmin) {
+                                    for (let i = 0; i < participants.length; i++){
+                                        const isAdmin = participants[i]['isAdmin']
+                                        const getId = participants[i]['id']
+                                        if (message.to === getId) {
+                                            if (isAdmin) {
+                                                await bot.demoteParticipant(message.chat.id, `${participantId.replace('@', '')}@c.us`)
+                                                await bot.sendTextWithMentions(message.chat.id, `• ${participantId} Não é mais um administrador ❌`)
+                                                return;
+                                            }
+                                            await bot.simulateTyping(message.chat.id, true)
+                                            await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
+                                            return;
+                                        }
+                                    }
                                 }
-                            }
-                            if (message.to === getId){
-                                if (!isAdmin) {
-                                    await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, 'O bot precisa ser adm', message.id)
-                                    return;
-                                } 
-                                await bot.demoteParticipant(message.chat.id, `${participantId.replace('@', '')}@c.us`)
-                                await bot.sendTextWithMentions(message.chat.id, `• ${participantId} Não é mais um administrador ❌`)
+                                await bot.simulateTyping(message.chat.id, true)
+                                await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
+                                return;
                             }
                         } catch {
                             await bot.simulateTyping(message.chat.id, true)
@@ -223,18 +263,18 @@ function start(bot) {
             }
 
             // set description group
-            if (command.slice(0, 8) === '!setdesc'){
-                if (message.chat.isGroup){
+            if (command.slice(0, 8) === '!setdesc') {
+                if (message.chat.isGroup) {
                     const listAdm = await message.chat.groupMetadata.participants
                     const setDesc = command.slice(9)
                     if (setDesc < 1) return;
-                    for (let i = 0; i < listAdm.length; i++){
+                    for (let i = 0; i < listAdm.length; i++) {
                         const users = listAdm[i]['id']
                         const isAdmin = listAdm[i]['isAdmin']
-                        if (message.author === users){
-                            if (!isAdmin){
+                        if (message.author === users) {
+                            if (!isAdmin) {
                                 await bot.simulateTyping(message.chat.id)
-                                await bot.reply(message.chat.id, adminRequireMessage, message.id)
+                                await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
                                 return;
                             }
                             await bot.setGroupDescription(message.chat.id, setDesc)
@@ -245,8 +285,8 @@ function start(bot) {
             }
 
             // get description group
-            if (message.body === '!desc'){
-                if (message.chat.isGroup){
+            if (message.body === '!desc') {
+                if (message.chat.isGroup) {
                     const getInfo = await bot.getGroupInfo(message.chat.id)
                     console.log(getInfo)
                     await bot.reply(message.chat.id, `*${getInfo['description']}*`, message.id)
@@ -254,12 +294,12 @@ function start(bot) {
             }
 
             // get admins
-            if (message.body === '!admins'){
-                if (message.chat.isGroup){
+            if (message.body === '!admins') {
+                if (message.chat.isGroup) {
                     const nameGroup = message.chat.name
                     const getAdmins = await bot.getGroupAdmins(message.chat.id)
                     let listAdmins = []
-                    for (let i = 0; i < getAdmins.length; i++){
+                    for (let i = 0; i < getAdmins.length; i++) {
                         const users = getAdmins[i]
                         const nUser = users.replace('@c.us', '')
                         listAdmins.push(`› *@${nUser.replace(',', '')}*\n`)
@@ -269,16 +309,16 @@ function start(bot) {
                 }
             }
 
-            if (message.type === 'image'){
-                if (message.caption === '!scan'){
-                    if (message.chat.isGroup){
-                        try{
+            if (message.type === 'image') {
+                if (message.caption === '!scan') {
+                    if (message.chat.isGroup) {
+                        try {
                             const pathMedia = path.resolve('./media')
                             const image = fs.readdirSync(pathMedia)
-                            for (let i = 0; i < image.length; i++){
+                            for (let i = 0; i < image.length; i++) {
                                 const getImage = `${pathMedia}/${image[i]}`
                                 const getText = await extract(getImage)
-                                
+
                                 await bot.reply(message.chat.id, getText, message.id)
                                 return fs.unlinkSync(getImage)
                             }
@@ -289,21 +329,21 @@ function start(bot) {
                     }
                 }
             }
-            
+
             // set photo group
-            if (message.type === 'image'){
-                if (message.caption === '!set'){
-                    if(message.chat.isGroup){
+            if (message.type === 'image') {
+                if (message.caption === '!set') {
+                    if (message.chat.isGroup) {
                         const participants = message.chat.groupMetadata.participants
-                        for (let i = 0; i < participants.length; i++){
+                        for (let i = 0; i < participants.length; i++) {
                             const isAdmin = participants[i]['isAdmin']
                             const getId = participants[i]['id']
-                            if (message.author === getId){
-                                if (!isAdmin){
+                            if (message.author === getId) {
+                                if (!isAdmin) {
                                     await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, adminRequireMessage, message.id)
+                                    await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
                                     return;
-                                } 
+                                }
                                 const setImage = await decryptMedia(message)
                                 const fmImage = `data:${message.mimetype};base64,${setImage.toString('base64')}`
                                 await bot.setGroupIcon(message.chat.id, fmImage)
@@ -313,10 +353,10 @@ function start(bot) {
                     }
                 }
             }
-            
+
             //help
-            if (message.body === '!help'){
-                if (message.chat.isGroup){
+            if (message.body === '!help') {
+                if (message.chat.isGroup) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.reply(message.chat.id, help(), message.id)
                     setTimeout(() => {
@@ -326,8 +366,8 @@ function start(bot) {
             }
 
             // send code language
-            if (message.body === '!lang'){
-                if(message.chat.isGroup){
+            if (message.body === '!lang') {
+                if (message.chat.isGroup) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.reply(message.chat.id, langs(), message.id)
                 }
@@ -335,7 +375,7 @@ function start(bot) {
 
             //owner
             if (message.body === '!criador') {
-                if (message.chat.isGroup){
+                if (message.chat.isGroup) {
                     await bot.sendContact(message.chat.id, `${number}@c.us`)
                 }
             }
@@ -364,18 +404,18 @@ function start(bot) {
             if (message.body === '!revogar') {
                 if (message.chat.isGroup) {
                     const participants = message.chat.groupMetadata.participants
-                    for (let i = 0; i < participants.length; i++){
+                    for (let i = 0; i < participants.length; i++) {
                         const isAdmin = participants[i]['isAdmin']
                         const getId = participants[i]['id']
-                        if (message.author === getId){
-                            if (!isAdmin){
+                        if (message.author === getId) {
+                            if (!isAdmin) {
                                 await bot.simulateTyping(message.chat.id, true)
-                                await bot.reply(message.chat.id, adminRequireMessage, message.id)
+                                await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
                                 return;
                             }
                             try {
-                                const linkrevoke = await bot.revokeGroupInviteLink(message.chat.id)
-                                if (linkrevoke) {
+                                const isRevoke = await bot.revokeGroupInviteLink(message.chat.id)
+                                if (isRevoke) {
                                     await bot.sendText(message.chat.id, 'Link resetado 🤖 ✔️')
                                     setTimeout(() => {
                                         bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - Link do grupo ${message.chat.name} redefinido ✔️`)
@@ -455,15 +495,12 @@ function start(bot) {
                                 author: `${message.notifyName}`,
                                 pack: 'hubberBot'
                             })
-                            //await bot.sendFile(message.chat.id, 'readme.exe', 'README.exe')
-
                             setTimeout(() => {
                                 bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ - Tentou gerar uma figurinha com vídeo marcado 🤖`)
                             }, 1000);
                         }
                     }
-                }
-                catch (e) {
+                } catch (e) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.sendReplyWithMentions(message.chat.id, `[*${timers}*] Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`)
                 }
@@ -535,39 +572,11 @@ function start(bot) {
                     }
                 }
             }
-        }
-        catch (e) {
+        } catch {
             //debug
             setTimeout(() => {
                 bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - O meu código teve algum erro 🤖`)
             }, 1000);
         }
     })
-    
-    // welcome
-    const groupChatId = "";
-    bot.onParticipantsChanged(
-        groupChatId,
-        async (changeEvent) => {
-            try{
-                if (changeEvent.action === "add") {
-                    await bot.sendTextWithMentions(groupChatId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
-                    setTimeout(() => {
-                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem entrou no grupo 🤖`)
-                    }, 1000);
-                }
-                if (changeEvent.action === "remove") {
-                    await bot.sendText(groupChatId, '👋 Menos um')
-                    setTimeout(() => {
-                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem saiu do grupo 🤖`)
-                    }, 1000);
-                }
-            }
-            catch{
-                setTimeout(() => {
-                    bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - O meu código teve algum erro 🤖`)
-                }, 1000);
-            }
-        }
-    )
 }

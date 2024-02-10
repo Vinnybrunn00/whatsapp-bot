@@ -8,14 +8,4 @@ _IGNORE_COVID_HELPER
 audio.mp3
 tests
 1.js
-<<<<<<< HEAD
-teste.js
-
-# managed
-**.data.json
-**.node-persist**
-**_IGNORE_**
-# end managed
-=======
 media
->>>>>>> 4e78f7e18b15ddc63b8db23d202e6e4ca9c6f397
