@@ -37,7 +37,6 @@ wa.create({
     preprocFilter: "m=> m.caption===`!scan` && m.type===`image`"
 }).then(bot => start(bot));
 
-
 const extract = async (img) => {
     if (img) {
         const text = await tesseract.recognize(img, { lang: "por" })
@@ -48,7 +47,7 @@ const extract = async (img) => {
 
 function start(bot) {
     bot.onMessage(async message => {
-        //console.log(message)
+        console.log(message.chat.id)
         const time = new Date()
         const timers = `${String(time.getHours()).padStart('2', '0')}:${String(time.getMinutes()).padStart('2', '0')}`
         const isRegister = db.includes(message.author)
@@ -483,7 +482,7 @@ function start(bot) {
                     }
                 }
             }
-            
+
             // send sticker video/gif
             else if (message.type === 'video') {
                 if (message.caption === '!sticker') {
@@ -567,7 +566,7 @@ function start(bot) {
                     }
                 }
             }
-            
+
             const impropes = []
             for (let i = 0; i < impropes.length; i++) {
                 if (message.body.includes(`${impropes[i]}`)) {
@@ -612,5 +611,35 @@ function start(bot) {
                 bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - O meu código teve algum erro 🤖`)
             }, 1000);
         }
-    })
+    });
+
+    // welcome
+    const groupChatId = "5521995133045-1602090760@g.us";
+    bot.onParticipantsChanged(
+        groupChatId,
+        async (changeEvent) => {
+            try {
+                if (changeEvent.action == "add") {
+                    const descGroup = await bot.getGroupInfo(groupChatId)
+                    await bot.sendTextWithMentions(groupChatId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
+                    await bot.simulateTyping(groupChatId, true)
+                    await bot.sendText(groupChatId, `${descGroup['description']}\n\nOBS: Digite *!help* para mais informações`)
+                    setTimeout(() => {
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem entrou no grupo 🤖`)
+                    }, 1000);
+                }
+                if (changeEvent.action == "remove") {
+                    await bot.sendText(groupChatId, '👋 Menos um')
+                    setTimeout(() => {
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem saiu do grupo 🤖`)
+                    }, 1000);
+                }
+            }
+            catch {
+                setTimeout(() => {
+                    bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - O meu código teve algum erro 🤖`)
+                }, 1000);
+            }
+        }
+    );
 }
