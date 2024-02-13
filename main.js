@@ -47,7 +47,7 @@ const extract = async (img) => {
 
 function start(bot) {
     bot.onMessage(async message => {
-        console.log(message.chat.id)
+        console.log(message.body)
         const time = new Date()
         const timers = `${String(time.getHours()).padStart('2', '0')}:${String(time.getMinutes()).padStart('2', '0')}`
         const isRegister = db.includes(message.author)
@@ -536,34 +536,6 @@ function start(bot) {
                 } catch (e) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.sendReplyWithMentions(message.chat.id, `[*${timers}*] Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`, message.id)
-                }
-            }
-
-            if (message.chat.id === '557488059907-1620062542@g.us') {
-                const wordlist_1 = ['viado', 'Viado', 'VIADO']
-                for (let i = 0; i < wordlist_1.length; i++) {
-                    if (message.body.includes(wordlist_1[i])) {
-                        let list_2 = ['Leonardo??? 😨🏳️‍🌈', 'Cego? 😏🏳️‍🌈', 'Leo? huuum 🤭']
-                        msg_2 = list_2[Math.floor((Math.random() * list_2.length))]
-                        await bot.reply(message.chat.id, msg_2, message.id)
-                    }
-                }
-                // Leo
-                const wordlist_2 = ['Leo', 'Leonardo', 'leo', 'leonardo']
-                for (let i = 0; i < wordlist_2.length; i++) {
-                    if (message.body.includes(`${wordlist_2[i]}`)) {
-                        await bot.sendReplyWithMentions(message.chat.id, '❌ Viado detectado 🦌')
-                        setTimeout(() => {
-                            bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - *${message.notifyName}* | _${message.author.replace('@c.us', '')}_ > Xingamento no grupo!`)
-                        }, 1000);
-                    }
-                }
-                // Fabs
-                const wordlist_3 = ['Fabs', 'fabs', 'Fabricio', 'fabricio']
-                for (let i = 0; i < wordlist_3.length; i++) {
-                    if (message.body.includes(`${wordlist_3[i]}`)) {
-                        await bot.sendReplyWithMentions(message.chat.id, '❌ Cú preto detectado 👌⚫')
-                    }
                 }
             }
 
