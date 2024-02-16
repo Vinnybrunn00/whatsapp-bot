@@ -6,6 +6,12 @@ node_modules
 COVID_HELPER.data.json
 _IGNORE_COVID_HELPER
 audio.mp3
-tests
+tests/*
 1.js
 media
+
+# managed
+**.data.json
+**.node-persist**
+**_IGNORE_**
+# end managed

@@ -130,7 +130,7 @@ function start(bot) {
             if (command.slice(0, 7) === '!remove') {
                 if (message.chat.isGroup) {
                     const participants = message.chat.groupMetadata.participants
-                    for (i = 0; i < participants.length; i++) {
+                    for (let i = 0; i < participants.length; i++) {
                         const isAdmin = participants[i]['isAdmin']
                         const getUser = participants[i]['id']
                         if (message.author === getUser) {
@@ -161,7 +161,7 @@ function start(bot) {
             }
 
             // send audio google
-            if (command.slice(0, 6) === '!audio') {
+            if (command.slice(0, 6) === '!voice') {
                 if (!isRegister) return await bot.reply(message.chat.id, msgRequire, message.id);
                 if (message.chat.isGroup) {
                     const lang = command.slice(7, 9)
@@ -170,14 +170,14 @@ function start(bot) {
                     if (text.length < 4 || text.length > 45) return;
                     try {
                         let gtts = new gTTS(text, lang)
-                        gtts.save('audio.mp3', async function (error, _) {
+                        gtts.save('voice/audio.mp3', async function (error, _) {
                             if (error) {
                                 await bot.simulateRecording(message.chat.id, true)
                                 await bot.sendText(message.chat.id, '❌ Erro ao converter áudio, tente novamente ❌')
                                 return;
                             }
                             await bot.simulateRecording(message.chat.id, true)
-                            await bot.sendPtt(message.chat.id, 'audio.mp3', message.id)
+                            await bot.sendPtt(message.chat.id, 'audio/audio.mp3', message.id)
                         })
                     } catch {
                         await bot.simulateTyping(message.chat.id, true)
@@ -189,12 +189,23 @@ function start(bot) {
             // download video youtube
             if (command.slice(0, 9) === '!download') {
                 if (message.chat.isGroup) {
-                    let link = command.slice(10)
+                    let format = command.slice(10, 13)
+                    let link = command.slice(14)
                     let match = link.match(regExp)
                     if (match && match[2].length == 11) {
                         try {
-                            yt(link, { filter: 'videoandaudio', format: "mp4" }).pipe(fs.createWriteStream('download.mp4')).on('finish', async () => {
-                                await bot.sendFile(message.chat.id, 'download.mp4', "download", 'video')
+                            yt(link, { 
+                                filter: format === 'mp4' ? 'videoandaudio' : 'audioonly', 
+                                format: format
+                            }).pipe(fs.createWriteStream(format === 'mp4' ? 'video/download.mp4' : 'audio/audio.mp3')).on('finish', async () => {
+                                if (format !== 'mp4'){
+                                    await bot.reply(message.chat.id, 'Baixando o áudio, aguarde...⌛', message.id)
+                                    await bot.sendAudio(message.chat.id, 'audio/audio.mp3')
+                                    return;
+                                }
+                                await bot.reply(message.chat.id, 'Baixando o vídeo, aguarde...⌛', message.id)
+                                await bot.sendFile(message.chat.id, 'video/download.mp4', "download", 'video')
+                                return;
                             })
                         } catch (err) {
                             await bot.simulateTyping(message.chat.id, true)
