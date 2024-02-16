@@ -1,10 +1,13 @@
 const wa = require('@open-wa/wa-automate');
+const os = require('os')
 const { decryptMedia } = require('@open-wa/wa-automate');
 const { setTimeout } = require('timers/promises');
 const { help } = require('./menus/help')
 const { langs } = require('./menus/lang')
+const { sysinfo } = require('./src/sysinfo')
 const tesseract = require('node-tesseract-ocr')
 const fs = require('fs')
+const os = require('os')
 const yt = require('ytdl-core')
 const gTTS = require('gtts')
 const path = require('path')
@@ -20,6 +23,14 @@ const gttsMessageError = `❌ Lingua não reconhecida, tente: \n›• !audio --
 const userAdminRequireMsg = '• Você precisa ser admin para usar este comando ❗'
 const msgRequire = '❌ Você precisa se registrar primeiro antes de usar este comando! ❌'
 const botAdminRequireMsg = '• O bot precisa ser admin para executar este comando ❗'
+
+const sys = {
+    model: os.cpus()[0].model,
+    system: os.version(),
+    host: os.networkInterfaces()['Wi-Fi'][1].address,
+    freeMemoryRam: os.freemem() / (1024**3),
+    totalMemoryRam: totalMemoryRam = os.totalmem() / (1024**3)
+}
 
 wa.create({
     sessionId: "COVID_HELPER",
@@ -37,7 +48,7 @@ wa.create({
     preprocFilter: "m=> m.caption===`!scan` && m.type===`image`"
 }).then(bot => start(bot));
 
-const extract = async (img) => {
+const extract = async img => {
     if (img) {
         const text = await tesseract.recognize(img, { lang: "por" })
         return text
@@ -80,6 +91,26 @@ function start(bot) {
                     db.push(message.author)
                     fs.writeFileSync(pathDir, JSON.stringify(db))
                     await bot.sendTextWithMentions(message.chat.id, `• @${message.author} registrado com sucesso ✅`)
+                }
+            }
+
+            // get info host bot
+            if (message.body === '!host'){
+                if (message.chat.isGroup){
+                    if (!isRegister) {
+                        await bot.simulateTyping(message.chat.id)
+                        await bot.reply(message.chat.id, msgRequire, message.id)
+                        return;
+                    }
+                    await bot.simulateTyping(message.chat.id)
+                    await bot.reply(message.chat.id, sysinfo({
+                        model: sys.model,
+                        system: sys.system,
+                        ip: sys.host,
+                        free: sys.freeMemoryRam.toFixed(2),
+                        total: sys.totalMemoryRam.toFixed()
+                    }), message.chat.id)
+                    return;
                 }
             }
 
@@ -162,6 +193,7 @@ function start(bot) {
 
             // send audio google
             if (command.slice(0, 6) === '!voice') {
+                if (os.platform() !== 'linux') return;
                 if (!isRegister) return await bot.reply(message.chat.id, msgRequire, message.id);
                 if (message.chat.isGroup) {
                     const lang = command.slice(7, 9)
@@ -192,6 +224,7 @@ function start(bot) {
                     let format = command.slice(10, 13)
                     let link = command.slice(14)
                     let match = link.match(regExp)
+                    if (format.length === 0 && link.length === 0) return;
                     if (match && match[2].length == 11) {
                         try {
                             yt(link, { 
