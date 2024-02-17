@@ -61,14 +61,14 @@ Full API documentation [here](https://github.com/open-wa/wa-automate-nodejs)
 |       ✅        |   Kick Member Group	            |
 |       ✅        |   Send Audio With Google Voice   |
 |       ✅        |   Send Code Language	            |
-|       ✅        |   Download Video and audio YouTube|
+|       ✅        |   Download Video YouTube	        |
 |       ✅        |   Promote Participant	        |
 |       ✅        |   Demote Participant	            |
 |       ✅        |   Set Description Group	        |
 |       ✅        |   Get Description Group          |
 |       ✅        |   Get Admins	                    |
 |       ✅        |   Set Photo Group	            |
-|       ✅        |   Get Host Settings	            |
+|       ✅        |   Get Host Settings              |
 
 | Debug Mode  |                     Functionality    |
 | :-----------: | :--------------------------------: |

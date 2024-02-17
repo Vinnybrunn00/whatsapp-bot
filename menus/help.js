@@ -14,7 +14,7 @@ const help = () => {
     ├───────────────────────────
     │
     ├─ › !download [format] [link]
-    │   Sobre: *Baixa vídeo ou audio do YouTube*
+    │   Sobre: *Baixa vídeos ou áudio do YouTube*
     │   Uso: \`\`\`!download mp4 || mp3 [link] \`\`\`
     │
     ├─ › !audio

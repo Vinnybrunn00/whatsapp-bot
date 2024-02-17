@@ -4,10 +4,8 @@ const { decryptMedia } = require('@open-wa/wa-automate');
 const { setTimeout } = require('timers/promises');
 const { help } = require('./menus/help')
 const { langs } = require('./menus/lang')
-const { sysinfo } = require('./src/sysinfo')
 const tesseract = require('node-tesseract-ocr')
 const fs = require('fs')
-const os = require('os')
 const yt = require('ytdl-core')
 const gTTS = require('gtts')
 const path = require('path')
@@ -23,14 +21,6 @@ const gttsMessageError = `❌ Lingua não reconhecida, tente: \n›• !audio --
 const userAdminRequireMsg = '• Você precisa ser admin para usar este comando ❗'
 const msgRequire = '❌ Você precisa se registrar primeiro antes de usar este comando! ❌'
 const botAdminRequireMsg = '• O bot precisa ser admin para executar este comando ❗'
-
-const sys = {
-    model: os.cpus()[0].model,
-    system: os.version(),
-    host: os.networkInterfaces()['Wi-Fi'][1].address,
-    freeMemoryRam: os.freemem() / (1024**3),
-    totalMemoryRam: totalMemoryRam = os.totalmem() / (1024**3)
-}
 
 wa.create({
     sessionId: "COVID_HELPER",
@@ -58,7 +48,7 @@ const extract = async img => {
 
 function start(bot) {
     bot.onMessage(async message => {
-        console.log(message.body)
+        //console.log(message.body)
         const time = new Date()
         const timers = `${String(time.getHours()).padStart('2', '0')}:${String(time.getMinutes()).padStart('2', '0')}`
         const isRegister = db.includes(message.author)
@@ -91,26 +81,6 @@ function start(bot) {
                     db.push(message.author)
                     fs.writeFileSync(pathDir, JSON.stringify(db))
                     await bot.sendTextWithMentions(message.chat.id, `• @${message.author} registrado com sucesso ✅`)
-                }
-            }
-
-            // get info host bot
-            if (message.body === '!host'){
-                if (message.chat.isGroup){
-                    if (!isRegister) {
-                        await bot.simulateTyping(message.chat.id)
-                        await bot.reply(message.chat.id, msgRequire, message.id)
-                        return;
-                    }
-                    await bot.simulateTyping(message.chat.id)
-                    await bot.reply(message.chat.id, sysinfo({
-                        model: sys.model,
-                        system: sys.system,
-                        ip: sys.host,
-                        free: sys.freeMemoryRam.toFixed(2),
-                        total: sys.totalMemoryRam.toFixed()
-                    }), message.chat.id)
-                    return;
                 }
             }
 
@@ -202,14 +172,14 @@ function start(bot) {
                     if (text.length < 4 || text.length > 45) return;
                     try {
                         let gtts = new gTTS(text, lang)
-                        gtts.save('voice/audio.mp3', async function (error, _) {
+                        gtts.save('voice/voice.mp3', async function (error, _) {
                             if (error) {
                                 await bot.simulateRecording(message.chat.id, true)
                                 await bot.sendText(message.chat.id, '❌ Erro ao converter áudio, tente novamente ❌')
                                 return;
                             }
                             await bot.simulateRecording(message.chat.id, true)
-                            await bot.sendPtt(message.chat.id, 'audio/audio.mp3', message.id)
+                            await bot.sendPtt(message.chat.id, 'voice/voice.mp3', message.id)
                         })
                     } catch {
                         await bot.simulateTyping(message.chat.id, true)
@@ -363,6 +333,7 @@ function start(bot) {
                     const getInfo = await bot.getGroupInfo(message.chat.id)
                     await bot.simulateTyping(message.chat.id)
                     await bot.reply(message.chat.id, `*${getInfo['description']}*`, message.id)
+                    return;
                 }
             }
 
@@ -376,11 +347,13 @@ function start(bot) {
                         const users = getAdmins[i]
                         const nUser = users.replace('@c.us', '')
                         listAdmins.push(`› *@${nUser.replace(',', '')}*\n`)
+                        return;
                     }
                     const getListAdmins = listAdmins.toString()
                     await bot.sendReplyWithMentions(message.chat.id, `------〘 _ADMINS MENCIONADOS_ 〙 ------\n\n \`\`\`[${timers}]\`\`\` ➣ *${nameGroup}*\n ➣ *${getAdmins.length} Admins*\n\n${getListAdmins.replace(/,/g, '')}`, message.id)
                 }
             }
+
             // extract text image
             if (message.type === 'image') {
                 if (message.caption === '!scan') {
@@ -443,6 +416,7 @@ function start(bot) {
                 if (message.chat.isGroup) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.reply(message.chat.id, langs(), message.id)
+                    return;
                 }
             }
 
@@ -450,6 +424,7 @@ function start(bot) {
             if (message.body === '!criador') {
                 if (message.chat.isGroup) {
                     await bot.sendContact(message.chat.id, `${number}@c.us`)
+                    return;
                 }
             }
 
@@ -627,7 +602,7 @@ function start(bot) {
                 bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - O meu código teve algum erro 🤖`)
             }, 1000);
         }
-    });
+    })
 
     // welcome
     const groupChatId = "5521995133045-1602090760@g.us";
@@ -641,17 +616,16 @@ function start(bot) {
                     await bot.simulateTyping(groupChatId, true)
                     await bot.sendText(groupChatId, `${descGroup['description']}\n\nOBS: Digite *!help* para mais informações`)
                     setTimeout(() => {
-                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem entrou no grupo 🤖`)
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - Alguem entrou no grupo 🤖`)
                     }, 1000);
                 }
                 if (changeEvent.action == "remove") {
                     await bot.sendText(groupChatId, '👋 Menos um')
                     setTimeout(() => {
-                        bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - Alguem saiu do grupo 🤖`)
+                        bot.sendText(`${number}@c.us`, `\`\`\`[${timers}]\`\`\` - Alguem saiu do grupo 🤖`)
                     }, 1000);
                 }
-            }
-            catch {
+            } catch {
                 setTimeout(() => {
                     bot.sendText(`${number}@c.us`, `\`\`\`[${String(hora).padStart('2', '0')}:${String(minutos).padStart('2', '0')}]\`\`\` - O meu código teve algum erro 🤖`)
                 }, 1000);
