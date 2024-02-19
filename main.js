@@ -11,6 +11,7 @@ const path = require('path')
 const number = '557488700196'
 const pathDir = path.resolve(__dirname, './data/db/users/db.json')
 const pathBlock = path.resolve(__dirname, './data/db/users/blocks.json')
+const pathLog = path.resolve(__dirname, './log/event.log')
 const db = JSON.parse(fs.readFileSync(pathDir))
 const blocks = JSON.parse(fs.readFileSync(pathBlock))
 const programmer_msg = `*❗ Mensagem do Desenvolvedor* ❗\n\n "Comandos ou mensagens não funcionam no privado, crie grupos com o bot para usa-los"`
@@ -20,9 +21,6 @@ const gttsMessageError = `❌ Lingua não reconhecida, tente: \n›• !audio --
 const userAdminRequireMsg = '• Você precisa ser admin para usar este comando ❗'
 const msgRequire = '❌ Você precisa se registrar primeiro antes de usar este comando! ❌'
 const botAdminRequireMsg = '• O bot precisa ser admin para executar este comando ❗'
-
-
-const pathLog = path.resolve(__dirname, './log/event.log')
 
 wa.create({
     sessionId: "COVID_HELPER",
