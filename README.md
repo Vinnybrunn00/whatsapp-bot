@@ -72,4 +72,5 @@ Full API documentation [here](https://github.com/open-wa/wa-automate-nodejs)
 
 | Debug Mode  |                     Functionality    |
 | :-----------: | :--------------------------------: |
-|       ✅        | The bot alerts you interactions  |
+|       ✅        | The bot saves events to a log file |
+|       ✅        | Send log file                    |

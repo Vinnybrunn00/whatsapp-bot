@@ -70,6 +70,9 @@ const help = () => {
     ├─ › !lang
     │   Sobre: *Envia codigos do idioma(!audio)*
     │
+    ├─ › !getlog
+    │   Sobre: *Send bot log file*
+    │
     └───────────────────────────
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
