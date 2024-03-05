@@ -9,3 +9,9 @@ audio.mp3
 tests
 1.js
 media
+
+# managed by open-wa
+**.data.json
+**.node-persist**
+**_IGNORE_**
+# end managed by open-wa

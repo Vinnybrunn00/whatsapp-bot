@@ -54,7 +54,6 @@ const extract = async img => {
 
 function start(bot) {
     bot.onMessage(async message => {
-        //console.log(message)
         const time = new Date()
         const timers = `${String(time.getHours()).padStart('2', '0')}:${String(time.getMinutes()).padStart('2', '0')}`
         const timersLog = `${time.getFullYear()}.${time.getMonth() >= 10 ? time.getMonth() + 1 : `0${time.getMonth() + 1}`}.${time.getDate()} ${time.getHours()}.${time.getMinutes()}.${time.getSeconds()}`
@@ -67,6 +66,15 @@ function start(bot) {
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.reply(message.chat.id, `\`\`\`[200] - OK 🤖 ✔️ \`\`\``, message.id)
                 return;
+            }
+        }
+
+        const emojis = ['🍼', '💦', '🔥', '🏳️‍⚧️', '🏳️‍🌈', '🎀', '🐃', '🍌', '🍆', '🦌']
+        for (let i = 0; i < 1; i++) {
+            if (message.chat.isGroup) {
+                sorted = Math.floor(Math.random() * emojis.length)
+                const getEmoji = emojis[sorted]
+                await bot.react(message.id, getEmoji)
             }
         }
 
@@ -97,12 +105,12 @@ function start(bot) {
             }
         }
 
-        if (message.body === '!getlog'){
-            if (message.chat.isGroup){
+        if (message.body === '!getlog') {
+            if (message.chat.isGroup) {
                 if (!isRegister) return await bot.reply(message.chat.id, msgRequire, message.id);
                 await bot.sendFile(message.chat.id, 'log/event.log', 'event.log', 'logfile')
-                return; 
-            }   
+                return;
+            }
         }
 
         // add participant
@@ -228,18 +236,32 @@ function start(bot) {
                 if (format.length === 0 && link.length === 0) return;
                 if (match && match[2].length == 11) {
                     try {
+                        let infoVideo = await yt.getInfo(link)
+                        const vSeconds = infoVideo.player_response.videoDetails.lengthSeconds
+                        const vTitle = infoVideo.player_response.videoDetails.title
+                        const inMinutes = Math.round((vSeconds % 3600) / 60)
                         yt(link, {
                             filter: format === 'mp4' ? 'videoandaudio' : 'audioonly',
                             format: format
                         }).pipe(fs.createWriteStream(format === 'mp4' ? 'video/download.mp4' : 'audio/audio.mp3')).on('finish', async () => {
                             if (format !== 'mp4') {
+                                if (inMinutes >= 5) {
+                                    await bot.simulateTyping(message.chta.id, true)
+                                    await bot.reply(message.chat.id, '• Erro: O áudio precisa ter menos de 5 minutos. ❗', message.id)
+                                    return;
+                                }
                                 await bot.reply(message.chat.id, 'Baixando o áudio, aguarde...⌛', message.id)
                                 await bot.sendAudio(message.chat.id, 'audio/audio.mp3')
                                 await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send audio... '${message.chat.name}' => [ !download ]`)
                                 return;
                             }
+                            if (inMinutes >= 6) {
+                                await bot.simulateTyping(message.chat.id, true)
+                                await bot.reply(message.chat.id, '• Erro: O vídeo precisa ter menos de 6 minutos. ❗', message.id)
+                                return;
+                            }
                             await bot.reply(message.chat.id, 'Baixando o vídeo, aguarde...⌛', message.id)
-                            await bot.sendFile(message.chat.id, 'video/download.mp4', "download", 'video')
+                            await bot.sendFile(message.chat.id, 'video/download.mp4', "download", vTitle)
                             await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send vídeo... '${message.chat.name}' => [ !download ]`)
                             return;
                         })
@@ -542,35 +564,25 @@ function start(bot) {
         }
 
         // send sticker image
-        if (message.type === 'image') {
+        if (message.type === 'image' || message.type === 'video') {
+            const isType = message.type
             if (message.caption === '!sticker') {
                 if (message.chat.isGroup) {
                     await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
-                    const imagem = await decryptMedia(message)
-                    const sticker = `data:${message.mimetype};base64,${imagem.toString('base64')}`
-                    await bot.sendImageAsSticker(message.chat.id, sticker, {
+                    const decrypt = await decryptMedia(message)
+                    const sticker = `data:${message.mimetype};base64,${decrypt.toString('base64')}`
+                    if (isType === 'image') {
+                        await bot.sendImageAsSticker(message.chat.id, sticker, {
+                            author: `${message.notifyName}`,
+                            keepScale: true,
+                            pack: 'hubberBot',
+                        })
+                        await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando sticker com imagem... '${message.chat.name}' => [ !sticker ]`)
+                        return;
+                    }
+                    await bot.sendMp4AsSticker(message.chat.id, sticker, { endTime: '00:00:07.0' }, {
                         author: `${message.notifyName}`,
-                        keepScale: true,
                         pack: 'hubberBot',
-                    })
-                    await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando sticker com imagem... '${message.chat.name}' => [ !sticker ]`)
-                    return;
-                }
-            }
-        }
-
-        // send sticker video/gif
-        else if (message.type === 'video') {
-            if (message.caption === '!sticker') {
-                if (message.chat.isGroup) {
-                    await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
-                    const video = await decryptMedia(message)
-                    const stickerV = `data:${message.mimetype};base64,${video.toString('base64')}`
-                    await bot.sendMp4AsSticker(message.chat.id, stickerV, {
-                        endTime: '00:00:07.0',
-                    }, {
-                        author: `${message.notifyName}`,
-                        pack: 'hubberBot'
                     })
                     await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando sticker com vídeo... '${message.chat.name}' => [ !sticker ]`)
                     return;
@@ -580,26 +592,22 @@ function start(bot) {
 
         if (message.body === '!sticker') {
             try {
-                if (message.quotedMsg.type === 'image') {
+                if (message.quotedMsg.type === 'image' || message.quotedMsg.type === 'video') {
+                    const isType = message.quotedMsg.type
                     if (message.chat.isGroup) {
                         await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
-                        const dp1 = await decryptMedia(message.quotedMsg)
-                        const sticker1 = `data:${message.quotedMsg.mimetype};base64,${dp1.toString('base64')}`
-                        await bot.sendImageAsSticker(message.chat.id, sticker1, {
-                            author: `${message.notifyName}`,
-                            keepScale: true,
-                            pack: 'hubberBot',
-                        })
-                        await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando fingurinha com imagem... '${message.chat.name}' => [ !sticker ]`)
-                        return;
-                    }
-                }
-                else if (message.quotedMsg.type === 'video') {
-                    if (message.chat.isGroup) {
-                        await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
-                        const dp2 = await decryptMedia(message.quotedMsg)
-                        const sticker2 = `data:${message.quotedMsg.mimetype};base64,${dp2.toString('base64')}`
-                        await bot.sendMp4AsSticker(message.chat.id, sticker2, {
+                        const decrypt = await decryptMedia(message.quotedMsg)
+                        const sticker = `data:${message.quotedMsg.mimetype};base64,${decrypt.toString('base64')}`
+                        if (isType !== 'video'){
+                            await bot.sendImageAsSticker(message.chat.id, sticker, {
+                                author: `${message.notifyName}`,
+                                keepScale: true,
+                                pack: 'hubberBot',
+                            })
+                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando fingurinha com imagem... '${message.chat.name}' => [ !sticker ]`)
+                            return;
+                        }
+                        await bot.sendMp4AsSticker(message.chat.id, sticker, {
                             endTime: '00:00:07.0',
                         }, {
                             author: `${message.notifyName}`,
@@ -611,7 +619,7 @@ function start(bot) {
                 }
             } catch (err) {
                 await bot.simulateTyping(message.chat.id, true)
-                await bot.sendReplyWithMentions(message.chat.id, `[*${timers}*] Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`, message.id)
+                await bot.sendReplyWithMentions(message.chat.id, `*[${timers}]* Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`, message.id)
                 await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} => [ !sticker ]`)
             }
         }

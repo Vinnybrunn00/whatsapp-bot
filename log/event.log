@@ -1,2 +1,12 @@
 hubberBot v2.0 log-file
 ---------------------------------------------------
+2024.03.4 22.1.20: [557488700196] [INFO] Send vídeo... 'Teste Bot' => [ !download ]
+2024.03.4 22.9.7: [557488700196] [INFO] Send audio... 'Teste Bot' => [ !download ]
+2024.03.4 22.10.44: [557488700196] [INFO] Gerando sticker com vídeo... 'Teste Bot' => [ !sticker ]
+2024.03.4 22.11.16: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.03.4 22.14.17: [557488700196] [INFO] Gerando sticker com vídeo... 'Teste Bot' => [ !sticker ]
+2024.03.4 22.14.53: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.03.4 22.22.5: [557488700196] [INFO] Gerando fingurinha com vídeo... 'Teste Bot' => [ !sticker ]
+2024.03.4 22.22.51: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
+2024.03.4 22.25.57: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.4 22.33.19: [557488700196] [INFO] Send voice... 'Teste Bot' => [ !voice ]
