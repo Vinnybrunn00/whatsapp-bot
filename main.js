@@ -69,15 +69,6 @@ function start(bot) {
             }
         }
 
-        const emojis = ['🍼', '💦', '🔥', '🏳️‍⚧️', '🏳️‍🌈', '🎀', '🐃', '🍌', '🍆', '🦌']
-        for (let i = 0; i < 1; i++) {
-            if (message.chat.isGroup) {
-                sorted = Math.floor(Math.random() * emojis.length)
-                const getEmoji = emojis[sorted]
-                await bot.react(message.id, getEmoji)
-            }
-        }
-
         if (!message.chat.isGroup) {
             if (isBlocked) return;
             await bot.simulateTyping(message.chat.id, true)
