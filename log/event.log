@@ -1,12 +1,51 @@
 hubberBot v2.0 log-file
 ---------------------------------------------------
-2024.03.4 22.1.20: [557488700196] [INFO] Send vídeo... 'Teste Bot' => [ !download ]
-2024.03.4 22.9.7: [557488700196] [INFO] Send audio... 'Teste Bot' => [ !download ]
-2024.03.4 22.10.44: [557488700196] [INFO] Gerando sticker com vídeo... 'Teste Bot' => [ !sticker ]
-2024.03.4 22.11.16: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
-2024.03.4 22.14.17: [557488700196] [INFO] Gerando sticker com vídeo... 'Teste Bot' => [ !sticker ]
-2024.03.4 22.14.53: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
-2024.03.4 22.22.5: [557488700196] [INFO] Gerando fingurinha com vídeo... 'Teste Bot' => [ !sticker ]
-2024.03.4 22.22.51: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
-2024.03.4 22.25.57: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
-2024.03.4 22.33.19: [557488700196] [INFO] Send voice... 'Teste Bot' => [ !voice ]
+2024.03.04 22.01.20: [557488700196] [INFO] Send vídeo... 'Teste Bot' => [ !download ]
+2024.03.04 22.09.07: [557488700196] [INFO] Send audio... 'Teste Bot' => [ !download ]
+2024.03.04 22.10.44: [557488700196] [INFO] Gerando sticker com vídeo... 'Teste Bot' => [ !sticker ]
+2024.03.04 22.11.16: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.03.04 22.14.17: [557488700196] [INFO] Gerando sticker com vídeo... 'Teste Bot' => [ !sticker ]
+2024.03.04 22.14.53: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.03.04 22.22.05: [557488700196] [INFO] Gerando fingurinha com vídeo... 'Teste Bot' => [ !sticker ]
+2024.03.04 22.22.51: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
+2024.03.04 22.25.57: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.04 22.33.19: [557488700196] [INFO] Send voice... 'Teste Bot' => [ !voice ]
+2024.03.04 23.09.32: [557488700196] [INFO] Solicitando menu de ajuda... 'Terroristas Do M. Bioca' => [ !help ]
+2024.03.06 20.45.11: [557488700196] [INFO] Gerando sticker com imagem... 'A' => [ !sticker ]
+2024.03.06 20.46.20: [557488700196] [INFO] Vinícius Bruno já registrado => [ !register ]
+2024.03.06 20.46.23: [5521999229777] [INFO] Nikollas já registrado => [ !register ]
+2024.03.06 20.47.03: [5521999229777] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 21.28.03: [5521983290130] [INFO] 🧙🏽‍♂️ registrado! => [ !register ]
+2024.03.06 21.28.37: [5521983290130] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 21.46.18: [5521996580395] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.06 21.46.26: [5521996580395] [INFO] Luan Sobral registrado! => [ !register ]
+2024.03.06 21.58.58: [5521973807729] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 21.59.01: [5521973807729] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 21.59.04: [5521973807729] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 22.00.57: [5521973807729] [INFO] Gerando sticker com vídeo... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 22.02.20: [5521973807729] [INFO] Gerando sticker com vídeo... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 22.29.30: [5521996580395] [INFO] Gerando sticker com vídeo... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 23.11.15: [5521973807729] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.06 23.11.18: [5521973807729] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.07 00.25.05: [557488700196] [INFO] Send voice... 'Teste Bot' => [ !voice ]
+2024.03.07 00.26.18: [557488700196] [INFO] Send voice... 'Bresil👍🏽' => [ !voice ]
+2024.03.07 00.35.19: [557488700196] [ERROR] Error: Command failed: tesseract "/home/vinny/whatsapp-bot/media/0C9878DC261C323AAC6FDF7C2DEC657E.jpeg" stdout -l por
+/bin/sh: 1: tesseract: not found
+ 'Teste Bot' => [ !scan ]
+2024.03.07 00.36.18: [557488700196] [ERROR] Error: Command failed: tesseract "/home/vinny/whatsapp-bot/media/0C9878DC261C323AAC6FDF7C2DEC657E.jpeg" stdout -l por
+/bin/sh: 1: tesseract: not found
+ 'Teste Bot' => [ !scan ]
+2024.03.07 00.39.08: [557488700196] [ERROR] Error: Command failed: tesseract "/home/vinny/whatsapp-bot/media/3E0DD04EA7AB36B617E0BC8E0FF059FE.jpeg" stdout -l por
+/bin/sh: 1: tesseract: not found
+ 'Teste Bot' => [ !scan ]
+2024.03.07 00.42.19: [557488700196] [ERROR] Error: Command failed: tesseract "/home/vinny/whatsapp-bot/media/9056C0BD8007D017AF7C7D98ABDCF55A.jpeg" stdout -l por
+Error opening data file /usr/share/tesseract-ocr/5/tessdata/por.traineddata
+Please make sure the TESSDATA_PREFIX environment variable is set to your "tessdata" directory.
+Failed loading language 'por'
+Tesseract couldn't load any languages!
+Could not initialize tesseract.
+ 'Teste Bot' => [ !scan ]
+2024.03.7 00.46.56: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.03.7 00.47.07: [557488700196] [INFO] Scanneando imagem... 'Teste Bot' => [ !scan ]
+2024.03.7 00.49.29: [557488700196] [INFO] Scanneando imagem... 'Teste Bot' => [ !scan ]
+2024.03.7 01.11.49: [557488700196] [INFO] Scanneando imagem... 'Teste Bot' => [ !scan ]

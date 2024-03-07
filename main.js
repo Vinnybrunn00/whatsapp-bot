@@ -21,6 +21,7 @@ const gttsMessageError = `❌ Lingua não reconhecida, tente: \n›• !audio --
 const userAdminRequireMsg = '• Você precisa ser admin para usar este comando ❗'
 const msgRequire = '❌ Você precisa se registrar primeiro antes de usar este comando! ❌'
 const botAdminRequireMsg = '• O bot precisa ser admin para executar este comando ❗'
+const ownerRequireMsg = '• Apenas o desevolvedor pode usar este comando ❗'
 
 wa.create({
     sessionId: "COVID_HELPER",
@@ -35,7 +36,7 @@ wa.create({
     useChrome: true,
     qrTimeout: 0,
     messagePreprocessor: "AUTO_DECRYPT_SAVE",
-    preprocFilter: "m=> m.caption===`!scan` && m.type===`image`"
+    preprocFilter: "m => m.caption === `!scan` && m.type===`image`",
 }).then(bot => start(bot));
 
 const saveLog = async (path, args) => {
@@ -54,12 +55,14 @@ const extract = async img => {
 
 function start(bot) {
     bot.onMessage(async message => {
+        //console.log(message)
         const time = new Date()
         const timers = `${String(time.getHours()).padStart('2', '0')}:${String(time.getMinutes()).padStart('2', '0')}`
-        const timersLog = `${time.getFullYear()}.${time.getMonth() >= 10 ? time.getMonth() + 1 : `0${time.getMonth() + 1}`}.${time.getDate()} ${time.getHours()}.${time.getMinutes()}.${time.getSeconds()}`
+        const timersLog = `${time.getFullYear()}.${time.getMonth() >= 10 ? time.getMonth() + 1 : `0${time.getMonth() + 1}`}.${time.getDate() >= 10 ? time.getDate() : `0${time.getDate()}`} ${time.getHours() >= 10 ? time.getHours() : `0${time.getHours()}`}.${time.getMinutes() >= 10 ? time.getMinutes() : `0${time.getMinutes()}`}.${time.getSeconds() >= 10 ? time.getSeconds() : `0${time.getSeconds()}`}`
         const isRegister = db.includes(message.author)
         const isBlocked = blocks.includes(message.author)
         const author = message.author.replace('@c.us', '')
+        const isAuthor = message.author.includes(`${number}@c.us`)
 
         if (message.body === '$debug') {
             if (message.author === `${number}@c.us`) {
@@ -96,10 +99,12 @@ function start(bot) {
             }
         }
 
+        // send log
         if (message.body === '!getlog') {
             if (message.chat.isGroup) {
+                if (!isAuthor) return await bot.reply(message.chat.id, ownerRequireMsg, message.id)
                 if (!isRegister) return await bot.reply(message.chat.id, msgRequire, message.id);
-                await bot.sendFile(message.chat.id, 'log/event.log', 'event.log', 'logfile')
+                await bot.sendFile(message.chat.id, 'log/event.log', 'event.log', '• Arquivo de logs de eventos do bot!')
                 return;
             }
         }

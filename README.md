@@ -20,9 +20,33 @@
 > cd Bot_Whatsapp_Sticker
 ```
 
-## installation 
+## Install tesseract in portuguese - Ubuntu
+
+- [See the languages](https://stackoverflow.com/questions/52891563/how-to-install-language-in-tesseract-ocr)
+
+```shell
+> sudo apt-get install tesseract-ocr-por -y
+```
+
+> [!note]
+> Note that in the code, there is a condition that prevents it from running on Windows, tesseract uses command lines, so I don't know if it will work well on Windows.
+
+#### Code:
+
+```javascript
+
+// send audio google
+if (command.slice(0, 6) === '!voice') {
+    if (os.platform() !== 'linux') return;
+...
+}
+```
+
+## Installation
+
 
 #### ATTENTION: When cloning the [Bot_Whatsapp_Sticker](https://github.com/Vinnybrunn00/Bot_Whatsapp_Sticker) install the modules:
+
 
 ```shell
 > npm i

@@ -6,12 +6,14 @@ node_modules
 COVID_HELPER.data.json
 _IGNORE_COVID_HELPER
 audio.mp3
-tests
-1.js
-media
+test
 
 # managed by open-wa
 **.data.json
 **.node-persist**
 **_IGNORE_**
 # end managed by open-wa
+
+voice/voice.mp3
+video/download.mp4
+test/test.js

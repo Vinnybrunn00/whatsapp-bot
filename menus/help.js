@@ -11,20 +11,20 @@ const help = () => {
     └─ › !sticker
 
 • _Utils_
-    ├───────────────────────────
+    ├─────────────────────────
     │
     ├─ › !download [format] [link]
     │   Sobre: *Baixa vídeos ou áudio do YouTube*
     │   Uso: \`\`\`!download mp4 || mp3 [link] \`\`\`
     │
-    ├─ › !audio
+    ├─ › !voice
     │   Sobre: *Converte qualquer mensagem em áudio*
     │   Uso: \`\`\`!audio [lang] [text] \`\`\`
     │
-    └───────────────────────────
+    └─────────────────────────
 
 • _Grupos_
-    ├───────────────────────────
+    ├─────────────────────────
     │
     ├─ › !all 
     │   Sobre: *Marca todos os membros do grupo*
@@ -59,10 +59,10 @@ const help = () => {
     ├─ › !scan [imagem]
     │   Sobre: *Extrai texto de uma imagem*
     │
-    └───────────────────────────
+    └─────────────────────────
 
 • _Outros_
-    ├───────────────────────────
+    ├─────────────────────────
     │
     ├─ › !criador
     │   Sobre: *Envia o contado do desenvolvedor*

@@ -1,14 +1,7 @@
-const yt = require('ytdl-core')
 
-//const down = yt('https://www.youtube.com/watch?v=QWGaqUdRvBM')
+const time = new Date()
 
-async function test() {
-    getInfors = await yt.getInfo('https://www.youtube.com/watch?v=QWGaqUdRvBM')
-    return getInfors.player_response.videoDetails.title
-}
+const timersLog = `${time.getFullYear()}.${time.getMonth() >= 10 ? time.getMonth() + 1 : `0${time.getMonth() + 1}`}.${time.getDate() >= 10 ? time.getDate() : `0${time.getDate()}`} ${time.getHours() >= 10 ? time.getHours() : `0${time.getHours()}`}.${time.getMinutes() >= 10 ? time.getMinutes() : `0${time.getMinutes()}`}.${time.getSeconds() >= 10 ? time.getSeconds() : `0${time.getSeconds()}`}`
 
-async function main(){
-    console.log(await test())
-}
 
-main()
+console.log(timersLog)
