@@ -3,7 +3,9 @@
     "@open-wa/wa-automate": "^4.67.0",
     "gtts": "^0.2.1",
     "node": "^18.17.0",
+    "node-schedule": "^2.1.1",
     "node-tesseract-ocr": "^2.2.1",
+    "request": "^2.88.2",
     "ytdl-core": "^4.11.5"
   }
 }

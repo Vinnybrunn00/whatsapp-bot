@@ -1,27 +1,26 @@
 const wa = require('@open-wa/wa-automate');
-const os = require('os')
+const os = require('os');
+const constants = require('./constants/constants');
 const { decryptMedia } = require('@open-wa/wa-automate');
-const { help } = require('./menus/help')
-const { langs } = require('./menus/lang')
-const tesseract = require('node-tesseract-ocr')
-const fs = require('fs')
-const yt = require('ytdl-core')
-const gTTS = require('gtts')
-const path = require('path')
+const { help } = require('./menus/help');
+const { langs } = require('./menus/lang');
+const fs = require('fs');
+const yt = require('ytdl-core');
+const gTTS = require('gtts');
+const path = require('path');
 const number = '557488700196'
-const pathDir = path.resolve(__dirname, './data/db/users/db.json')
-const pathBlock = path.resolve(__dirname, './data/db/users/blocks.json')
-const pathLog = path.resolve(__dirname, './log/event.log')
-const db = JSON.parse(fs.readFileSync(pathDir))
-const blocks = JSON.parse(fs.readFileSync(pathBlock))
-const programmer_msg = `*❗ Mensagem do Desenvolvedor* ❗\n\n "Comandos ou mensagens não funcionam no privado, crie grupos com o bot para usa-los"`
-const administradores = '❗ Apenas administradores são autorizados a usar este comando. ❗'
-const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/
-const gttsMessageError = `❌ Lingua não reconhecida, tente: \n›• !audio --pt frase ou \`\`\`!lang \`\`\``
-const userAdminRequireMsg = '• Você precisa ser admin para usar este comando ❗'
-const msgRequire = '❌ Você precisa se registrar primeiro antes de usar este comando! ❌'
-const botAdminRequireMsg = '• O bot precisa ser admin para executar este comando ❗'
-const ownerRequireMsg = '• Apenas o desevolvedor pode usar este comando ❗'
+const lib = require('./lib/apis')
+const util = require('./lib/utils')
+const api = new lib.ApiClashOfClans(constants.api.apiUrl, constants.api.auth)
+const utils = new util.Utils()
+const pathDir = path.resolve(__dirname, './data/db/users/db.json');
+const pathBlock = path.resolve(__dirname, './data/db/users/blocks.json');
+const pathLog = path.resolve(__dirname, './log/event.log');
+const setPrefix = path.resolve(__dirname, './data/db/users/prefix.txt');
+const setHour = path.resolve(__dirname, './data/db/users/hour.txt');
+const db = JSON.parse(fs.readFileSync(pathDir));
+const blocks = JSON.parse(fs.readFileSync(pathBlock));
+const tasks = require('node-schedule')
 
 wa.create({
     sessionId: "COVID_HELPER",
@@ -39,25 +38,10 @@ wa.create({
     preprocFilter: "m => m.caption === `!scan` && m.type===`image`",
 }).then(bot => start(bot));
 
-const saveLog = async (path, args) => {
-    if (typeof args !== 'string') throw ErrorEvent('No String') // this condition will never be executed
-    fs.writeFileSync(path, args + '\n', { flag: 'a' })
-    return true
-}
-
-const extract = async img => {
-    if (img) {
-        const text = await tesseract.recognize(img, { lang: "por" })
-        return text
-    }
-    return false
-}
-
 function start(bot) {
     bot.onMessage(async message => {
-        //console.log(message)
         const time = new Date()
-        const timers = `${String(time.getHours()).padStart('2', '0')}:${String(time.getMinutes()).padStart('2', '0')}`
+        const timers = `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`
         const timersLog = `${time.getFullYear()}.${time.getMonth() >= 10 ? time.getMonth() + 1 : `0${time.getMonth() + 1}`}.${time.getDate() >= 10 ? time.getDate() : `0${time.getDate()}`} ${time.getHours() >= 10 ? time.getHours() : `0${time.getHours()}`}.${time.getMinutes() >= 10 ? time.getMinutes() : `0${time.getMinutes()}`}.${time.getSeconds() >= 10 ? time.getSeconds() : `0${time.getSeconds()}`}`
         const isRegister = db.includes(message.author)
         const isBlocked = blocks.includes(message.author)
@@ -75,11 +59,39 @@ function start(bot) {
         if (!message.chat.isGroup) {
             if (isBlocked) return;
             await bot.simulateTyping(message.chat.id, true)
-            await bot.sendText(message.chat.id, programmer_msg)
+            await bot.sendText(message.chat.id, constants.msg.programmer_msg)
             blocks.push(message.author)
             fs.writeFileSync(pathBlock, JSON.stringify(blocks))
             return;
         }
+        
+        switch (message.author) {
+            case '5521974234579@c.us':
+                await bot.react(message.id, '⛄')
+                return;
+
+            case '557488092219@c.us':
+                await bot.react(message.id, '🚬')
+                return;
+        }
+
+        if (message.body.startsWith('!attacks')) {
+            if (message.chat.isGroup) {
+                const admins = await bot.getGroupAdmins(message.chat.id)
+                const isAdmin = admins.includes(message.author)
+                if (isAdmin) {
+                    const attacks = await api.AttackRaides()
+                    await bot.simulateTyping(message.chat.id, true)
+                    await bot.reply(message.chat.id, attacks, message.id)
+                    return;
+                }
+                await bot.simulateTyping(message.chat.id, true)
+                await bot.sendText(message.chat.id, constants.msg.userAdminRequireMsg)
+                return;
+            }
+        }
+
+
 
         //register
         if (message.body === '!register') {
@@ -87,30 +99,80 @@ function start(bot) {
                 if (isRegister) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.reply(message.chat.id, '• Você já está registrado ❗', message.id)
-                    await saveLog(pathLog, `${timersLog}: [${author}] [INFO] ${message.notifyName} já registrado => [ !register ]`)
+                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] ${message.notifyName} já registrado => [ !register ]`)
                     return;
                 }
                 db.push(message.author)
                 fs.writeFileSync(pathDir, JSON.stringify(db))
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.sendTextWithMentions(message.chat.id, `• @${message.author} registrado com sucesso ✅`)
-                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] ${message.notifyName} registrado! => [ !register ]`)
+                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] ${message.notifyName} registrado! => [ !register ]`)
                 return;
             }
         }
 
         // send log
-        if (message.body === '!getlog') {
+        if (message.body === `!getlog`) {
             if (message.chat.isGroup) {
-                if (!isAuthor) return await bot.reply(message.chat.id, ownerRequireMsg, message.id)
-                if (!isRegister) return await bot.reply(message.chat.id, msgRequire, message.id);
+                if (!isAuthor) return await bot.reply(message.chat.id, constants.msg.ownerRequireMsg, message.id)
+                if (!isRegister) return await bot.reply(message.chat.id, constants.msg.msgRequire, message.id);
                 await bot.sendFile(message.chat.id, 'log/event.log', 'event.log', '• Arquivo de logs de eventos do bot!')
                 return;
             }
         }
 
-        // add participant
+        // send task
+        tasks.scheduleJob('*/15 * * * * *', () => {
+            const hour = fs.readFileSync(setHour, 'utf-8')
+            tasks.scheduleJob(`0 ${hour} * * *`, async () => { 
+                const chatId = '557488562578-1624412670@g.us'
+                await bot.simulateTyping(chatId, true)
+                await bot.sendText(chatId, 'beep!!!')
+                return;
+            })
+        })
+
+        // sethour
         let command = message.body
+        if (command.startsWith('!sethour')) {
+            if (message.chat.isGroup) {
+                const admins = await bot.getGroupAdmins(message.chat.id)
+                const isAdmin = admins.includes(message.author)
+                if (isAdmin){
+                    const hour = command.slice(9)
+                    const newHour = hour.replace(':', ' ')
+                    const listHour = newHour.split(' ').reverse()
+                    if (await utils.setHour(setHour, listHour.join().replace(',', ' '))) {
+                        await bot.simulateTyping(message.chat.id, true)
+                        await bot.sendText(message.chat.id,  `• Hora atualizada para ${hour} com sucesso ✅`)
+                        return;
+                    }
+                }
+                await bot.simulateTyping(message.chat.id, true)
+                await bot.sendText(message.chat.id, constants.msg.userAdminRequireMsg)
+                return;
+            }
+        }
+
+        // change prefix
+        if (command.startsWith('!setprefix')) {
+            if (message.chat.isGroup) {
+                const newPrefix = command.slice(11)
+                const isCheckRegex = constants.msg.regex
+                if (newPrefix.match(isCheckRegex) && newPrefix.length > 1) {
+                    if (utils.changePrefix(setPrefix, newPrefix)) {
+                        await bot.simulateTyping(message.chat.id, true)
+                        await bot.sendText(message.chat.id, `• Prefix atualizado para *"${newPrefix}"* com sucesso! ✅`)
+                        return;
+                    }
+                }
+                await bot.simulateTyping(message.chat.id, true)
+                await bot.reply(message.chat.id, '• Use somente caracteres especiais para o prefixo *(!@#$%&*/)*. ❗', message.id)
+                return;
+            }
+        }
+
+        // add participant
         if (command.slice(0, 4) === '!add') {
             if (message.chat.isGroup) {
                 const participants = message.chat.groupMetadata.participants
@@ -130,26 +192,26 @@ function start(bot) {
                                             if (isAdd) {
                                                 await bot.simulateTyping(message.chat.id, true)
                                                 await bot.sendText(message.chat.id, '• Novo usuário adicionado ✅')
-                                                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Novo usuário adicionado '${message.chat.name}' => [ !add ]`)
+                                                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Novo usuário adicionado '${message.chat.name}' => [ !add ]`)
                                                 return;
                                             }
                                         } catch (err) {
                                             await bot.simulateTyping(message.chat.id, true)
                                             await bot.sendText(message.chat.id, '• Ocorreu algum problema ao adicionar o usuário, tente novamente ❌')
-                                            await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !add ]`)
+                                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !add ]`)
                                             return;
                                         }
                                     }
                                     await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
-                                    await saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !add ]`)
+                                    await bot.reply(message.chat.id, constants.msg.botAdminRequireMsg, message.id)
+                                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !add ]`)
                                     return;
                                 }
                             }
                         }
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] ${message.notifyName} não admin '${message.chat.name}' => [ !add ]`)
+                        await bot.reply(message.chat.id, constants.msg.userAdminRequireMsg, message.id)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] ${message.notifyName} não admin '${message.chat.name}' => [ !add ]`)
                         return;
                     }
                 }
@@ -175,19 +237,19 @@ function start(bot) {
                                         if (isRemove) {
                                             await bot.simulateTyping(message.chat.id, true)
                                             await bot.sendText(message.chat.id, '• Usuário removido ✅')
-                                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário removido '${message.chat.name}' => [ !remove ]`)
+                                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário removido '${message.chat.name}' => [ !remove ]`)
                                             return;
                                         }
                                     }
                                     await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
-                                    await saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !remove ]`)
+                                    await bot.reply(message.chat.id, constants.msg.botAdminRequireMsg, message.id)
+                                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !remove ]`)
                                 }
                             }
                         }
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] ${message.notifyName} não admin  '${message.chat.name}' => [ !remove ]`)
+                        await bot.reply(message.chat.id, constants.msg.userAdminRequireMsg, message.id)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] ${message.notifyName} não admin  '${message.chat.name}' => [ !remove ]`)
                     }
                 }
             }
@@ -196,7 +258,7 @@ function start(bot) {
         // send audio google
         if (command.slice(0, 6) === '!voice') {
             if (os.platform() !== 'linux') return;
-            if (!isRegister) return await bot.reply(message.chat.id, msgRequire, message.id);
+            if (!isRegister) return await bot.reply(message.chat.id, constants.msg.msgRequire, message.id);
             if (message.chat.isGroup) {
                 const lang = command.slice(7, 9)
                 const text = command.slice(10)
@@ -208,17 +270,17 @@ function start(bot) {
                         if (error) {
                             await bot.simulateRecording(message.chat.id, true)
                             await bot.sendText(message.chat.id, '❌ Erro ao converter áudio, tente novamente ❌')
-                            await saveLog(pathLog, `${timersLog}: [${author}] [DEBUG] Erro ao converter áudio '${message.chat.name}' => [ !voice ]`)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [DEBUG] Erro ao converter áudio '${message.chat.name}' => [ !voice ]`)
                             return;
                         }
                         await bot.simulateRecording(message.chat.id, true)
                         await bot.sendPtt(message.chat.id, 'voice/voice.mp3', message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send voice... '${message.chat.name}' => [ !voice ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send voice... '${message.chat.name}' => [ !voice ]`)
                     })
                 } catch (err) {
                     await bot.simulateTyping(message.chat.id, true)
-                    await bot.reply(message.chat.id, gttsMessageError, message.id)
-                    await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !voice ]`)
+                    await bot.reply(message.chat.id, constants.msg.gttsMessageError, message.id)
+                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !voice ]`)
                 }
             }
         }
@@ -228,7 +290,7 @@ function start(bot) {
             if (message.chat.isGroup) {
                 let format = command.slice(10, 13)
                 let link = command.slice(14)
-                let match = link.match(regExp)
+                let match = link.match(constants.msg.regExp)
                 if (format.length === 0 && link.length === 0) return;
                 if (match && match[2].length == 11) {
                     try {
@@ -248,7 +310,7 @@ function start(bot) {
                                 }
                                 await bot.reply(message.chat.id, 'Baixando o áudio, aguarde...⌛', message.id)
                                 await bot.sendAudio(message.chat.id, 'audio/audio.mp3')
-                                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send audio... '${message.chat.name}' => [ !download ]`)
+                                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send audio... '${message.chat.name}' => [ !download ]`)
                                 return;
                             }
                             if (inMinutes >= 6) {
@@ -258,13 +320,13 @@ function start(bot) {
                             }
                             await bot.reply(message.chat.id, 'Baixando o vídeo, aguarde...⌛', message.id)
                             await bot.sendFile(message.chat.id, 'video/download.mp4', "download", vTitle)
-                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send vídeo... '${message.chat.name}' => [ !download ]`)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Send vídeo... '${message.chat.name}' => [ !download ]`)
                             return;
                         })
                     } catch (err) {
                         await bot.simulateTyping(message.chat.id, true)
                         await bot.reply(message.chat.id, '❌ Erro ao baixar o vídeo, tente novamente. ❌', message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !download ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !download ]`)
                     }
                 }
             }
@@ -278,7 +340,7 @@ function start(bot) {
                 if (isAdm.includes(`${participantId.replace('@', '')}@c.us`)) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.sendReplyWithMentions(message.chat.id, `• ${participantId} Já é um administrador ❗`, message.id)
-                    await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário já é um administrador '${message.chat.name}' => [ !promote ]`)
+                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário já é um administrador '${message.chat.name}' => [ !promote ]`)
                     return;
                 }
                 let participants = message.chat.groupMetadata.participants
@@ -295,23 +357,23 @@ function start(bot) {
                                         if (isAdmin) {
                                             await bot.promoteParticipant(message.chat.id, `${participantId.replace('@', '')}@c.us`)
                                             await bot.sendTextWithMentions(message.chat.id, `• ${participantId} agora é um administrador ✅`)
-                                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Novo admin '${message.chat.name}' => [ !promote ]`)
+                                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Novo admin '${message.chat.name}' => [ !promote ]`)
                                             return;
                                         }
                                         await bot.simulateTyping(message.chat.id, true)
-                                        await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
-                                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !promote ]`)
+                                        await bot.reply(message.chat.id, constants.msg.botAdminRequireMsg, message.id)
+                                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !promote ]`)
                                     }
                                 }
                             }
                             await bot.simulateTyping(message.chat.id, true)
-                            await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
-                            await saveLog(pathLog, `${timersLog}: [${author}] [WARN] ${message.notifyName} não é admin '${message.chat.name}' => [ !promote ]`)
+                            await bot.reply(message.chat.id, constants.msg.userAdminRequireMsg, message.id)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] ${message.notifyName} não é admin '${message.chat.name}' => [ !promote ]`)
                         }
                     } catch (err) {
                         await bot.simulateTyping(message.chat.id, true)
                         await bot.reply(message.chat.id, '❌ Algo deu errado, tente novamente.', message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !promote ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !promote ]`)
                     }
                 }
             }
@@ -325,7 +387,7 @@ function start(bot) {
                 if (!isAdm.includes(`${participantId.replace('@', '')}@c.us`)) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.sendReplyWithMentions(message.chat.id, `• ${participantId} Não está na lista de admins ❗`, message.id)
-                    await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário não admin '${message.chat.name}' => [ !demote ]`)
+                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário não admin '${message.chat.name}' => [ !demote ]`)
                     return;
                 }
                 let participants = message.chat.groupMetadata.participants
@@ -342,25 +404,25 @@ function start(bot) {
                                         if (isAdmin) {
                                             await bot.demoteParticipant(message.chat.id, `${participantId.replace('@', '')}@c.us`)
                                             await bot.sendTextWithMentions(message.chat.id, `• ${participantId} Não é mais um administrador ❌`)
-                                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário rebaixado '${message.chat.name}' => [ !demote ]`)
+                                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Usuário rebaixado '${message.chat.name}' => [ !demote ]`)
                                             return;
                                         }
                                         await bot.simulateTyping(message.chat.id, true)
-                                        await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
-                                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !demote ]`)
+                                        await bot.reply(message.chat.id, constants.msg.botAdminRequireMsg, message.id)
+                                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin '${message.chat.name}' => [ !demote ]`)
                                         return;
                                     }
                                 }
                             }
                             await bot.simulateTyping(message.chat.id, true)
-                            await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
-                            await saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não admin '${message.chat.name}' => [ !demote ]`)
+                            await bot.reply(message.chat.id, constants.msg.userAdminRequireMsg, message.id)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não admin '${message.chat.name}' => [ !demote ]`)
                             return;
                         }
                     } catch (err) {
                         await bot.simulateTyping(message.chat.id, true)
                         await bot.reply(message.chat.id, '❌ Algo deu errado, tente novamente.', message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !demote ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !demote ]`)
                     }
                 }
             }
@@ -378,14 +440,14 @@ function start(bot) {
                     if (message.author === users) {
                         if (!isAdmin) {
                             await bot.simulateTyping(message.chat.id)
-                            await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
-                            await saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não admin '${message.chat.name}' => [ !setdesc ]`)
+                            await bot.reply(message.chat.id, constants.msg.userAdminRequireMsg, message.id)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não admin '${message.chat.name}' => [ !setdesc ]`)
                             return;
                         }
                         await bot.setGroupDescription(message.chat.id, setDesc)
                         await bot.simulateTyping(message.chat.id)
                         await bot.sendText(message.chat.id, '• Descrição do grupo atualizada, envie *!desc* para ler. ✅')
-                        await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Atualizando descrição '${message.chat.name}'... => [ !setdesc ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Atualizando descrição '${message.chat.name}'... => [ !setdesc ]`)
                     }
                 }
             }
@@ -397,7 +459,7 @@ function start(bot) {
                 const getInfo = await bot.getGroupInfo(message.chat.id)
                 await bot.simulateTyping(message.chat.id)
                 await bot.reply(message.chat.id, `*${getInfo['description']}*`, message.id)
-                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando descrição '${message.chat.name}'... => [ !desc ]`)
+                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando descrição '${message.chat.name}'... => [ !desc ]`)
                 return;
             }
         }
@@ -416,7 +478,7 @@ function start(bot) {
                 }
                 const getListAdmins = listAdmins.toString()
                 await bot.sendReplyWithMentions(message.chat.id, `------〘 _ADMINS MENCIONADOS_ 〙 ------\n\n \`\`\`[${timers}]\`\`\` ➣ *${nameGroup}*\n ➣ *${getAdmins.length} Admins*\n\n${getListAdmins.replace(/,/g, '')}`, message.id)
-                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando admins '${message.chat.name}'... => [ !admins ]`)
+                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando admins '${message.chat.name}'... => [ !admins ]`)
             }
         }
 
@@ -429,15 +491,15 @@ function start(bot) {
                         const image = fs.readdirSync(pathMedia)
                         for (let i = 0; i < image.length; i++) {
                             const getImage = `${pathMedia}/${image[i]}`
-                            const getText = await extract(getImage)
+                            const getText = await utils.extract(getImage)
                             await bot.reply(message.chat.id, getText, message.id)
-                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Scanneando imagem... '${message.chat.name}' => [ !scan ]`)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Scanneando imagem... '${message.chat.name}' => [ !scan ]`)
                             return fs.unlinkSync(getImage)
                         }
                     } catch (err) {
                         await bot.simulateTyping(message.chat.id, true)
                         await bot.reply(message.chat.id, '• Erro ao converter imagem para texto, tente novamente')
-                        await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !scan ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !scan ]`)
                     }
                 }
             }
@@ -454,15 +516,15 @@ function start(bot) {
                         if (message.author === getId) {
                             if (!isAdmin) {
                                 await bot.simulateTyping(message.chat.id, true)
-                                await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
-                                await saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não admin '${message.chat.name}' => [ !set ]`)
+                                await bot.reply(message.chat.id, constants.msg.userAdminRequireMsg, message.id)
+                                await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não admin '${message.chat.name}' => [ !set ]`)
                                 return;
                             }
                             const setImage = await decryptMedia(message)
                             const fmImage = `data:${message.mimetype};base64,${setImage.toString('base64')}`
                             await bot.setGroupIcon(message.chat.id, fmImage)
                             await bot.sendText(message.chat.id, '• Imagem do grupo atualizada ✅')
-                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Atualizando imagem '${message.chat.name}'... => [ !set ]`)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Atualizando imagem '${message.chat.name}'... => [ !set ]`)
                         }
                     }
                 }
@@ -474,7 +536,7 @@ function start(bot) {
             if (message.chat.isGroup) {
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.reply(message.chat.id, help(), message.id)
-                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando menu de ajuda... '${message.chat.name}' => [ !help ]`)
+                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando menu de ajuda... '${message.chat.name}' => [ !help ]`)
                 return;
             }
         }
@@ -484,7 +546,7 @@ function start(bot) {
             if (message.chat.isGroup) {
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.reply(message.chat.id, langs(), message.id)
-                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando menu de idioma... '${message.chat.name}' => [ !lang ]`)
+                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando menu de idioma... '${message.chat.name}' => [ !lang ]`)
                 return;
             }
         }
@@ -493,7 +555,7 @@ function start(bot) {
         if (message.body === '!criador') {
             if (message.chat.isGroup) {
                 await bot.sendContact(message.chat.id, `${number}@c.us`)
-                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando contado do DEV... '${message.chat.name}' => [ !criador ]`)
+                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando contado do DEV... '${message.chat.name}' => [ !criador ]`)
                 return;
             }
         }
@@ -511,13 +573,13 @@ function start(bot) {
                             if (typeof link === 'string') {
                                 await bot.simulateTyping(message.chat.id, true)
                                 await bot.reply(message.chat.id, link, message.id)
-                                await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando link de convite... '${message.chat.name}' => [ !link ]`)
+                                await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando link de convite... '${message.chat.name}' => [ !link ]`)
                                 return;
                             }
                         }
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não adm. '${message.chat.name}' => [ !link ]`)
+                        await bot.reply(message.chat.id, constants.msg.botAdminRequireMsg, message.id)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não adm. '${message.chat.name}' => [ !link ]`)
                     }
                 }
             }
@@ -541,19 +603,19 @@ function start(bot) {
                                         if (isRevoke) {
                                             await bot.simulateTyping(message.chat.id, true)
                                             await bot.sendText(message.chat.id, 'Link resetado 🤖 ✔️')
-                                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Resetando Link do grupo... '${message.chat.name}' => [ !revogar ]`)
+                                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Resetando Link do grupo... '${message.chat.name}' => [ !revogar ]`)
                                             return;
                                         }
                                     }
                                     await bot.simulateTyping(message.chat.id, true)
-                                    await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
-                                    await saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não adm. '${message.chat.name}' => [ !revogar ]`)
+                                    await bot.reply(message.chat.id, constants.msg.botAdminRequireMsg, message.id)
+                                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não adm. '${message.chat.name}' => [ !revogar ]`)
                                 }
                             }
                         }
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, userAdminRequireMsg, message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não adm. '${message.chat.name}' => [ !revogar ]`)
+                        await bot.reply(message.chat.id, constants.msg.userAdminRequireMsg, message.id)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não adm. '${message.chat.name}' => [ !revogar ]`)
                     }
                 }
             }
@@ -573,14 +635,14 @@ function start(bot) {
                             keepScale: true,
                             pack: 'hubberBot',
                         })
-                        await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando sticker com imagem... '${message.chat.name}' => [ !sticker ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando sticker com imagem... '${message.chat.name}' => [ !sticker ]`)
                         return;
                     }
                     await bot.sendMp4AsSticker(message.chat.id, sticker, { endTime: '00:00:07.0' }, {
                         author: `${message.notifyName}`,
                         pack: 'hubberBot',
                     })
-                    await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando sticker com vídeo... '${message.chat.name}' => [ !sticker ]`)
+                    await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando sticker com vídeo... '${message.chat.name}' => [ !sticker ]`)
                     return;
                 }
             }
@@ -594,13 +656,13 @@ function start(bot) {
                         await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                         const decrypt = await decryptMedia(message.quotedMsg)
                         const sticker = `data:${message.quotedMsg.mimetype};base64,${decrypt.toString('base64')}`
-                        if (isType !== 'video'){
+                        if (isType !== 'video') {
                             await bot.sendImageAsSticker(message.chat.id, sticker, {
                                 author: `${message.notifyName}`,
                                 keepScale: true,
                                 pack: 'hubberBot',
                             })
-                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando fingurinha com imagem... '${message.chat.name}' => [ !sticker ]`)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando fingurinha com imagem... '${message.chat.name}' => [ !sticker ]`)
                             return;
                         }
                         await bot.sendMp4AsSticker(message.chat.id, sticker, {
@@ -609,14 +671,14 @@ function start(bot) {
                             author: `${message.notifyName}`,
                             pack: 'hubberBot'
                         })
-                        await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando fingurinha com vídeo... '${message.chat.name}' => [ !sticker ]`)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Gerando fingurinha com vídeo... '${message.chat.name}' => [ !sticker ]`)
                         return;
                     }
                 }
             } catch (err) {
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.sendReplyWithMentions(message.chat.id, `*[${timers}]* Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`, message.id)
-                await saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} => [ !sticker ]`)
+                await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} => [ !sticker ]`)
             }
         }
 
@@ -633,12 +695,12 @@ function start(bot) {
                         if (isAdmin) {
                             await bot.deleteMessage(message.chat.id, message.id)
                             await bot.sendText(message.chat.id, '✅ - Mensagem imprópria deletada')
-                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Deletando mensagem`)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Deletando mensagem`)
                             return;
                         }
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, botAdminRequireMsg, message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin. '${message.chat.name}' => [ inappropriate ]`)
+                        await bot.reply(message.chat.id, constants.msg.botAdminRequireMsg, message.id)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] Bot não admin. '${message.chat.name}' => [ inappropriate ]`)
                     }
                 }
             }
@@ -663,12 +725,12 @@ function start(bot) {
                             }
                             listString = userList.toString()
                             await bot.sendReplyWithMentions(message.chat.id, `------〘 _TODOS MENCIONADOS_ 〙 ------\n\n \`\`\`[${timers}]\`\`\` ➣ *${grupo}*\n ➣ *${total} Membros*\n\n${listString.replace(/,/g, '')}`, message.id)
-                            await saveLog(pathLog, `${timersLog}: [${author}] [INFO] Mencionando todos os membros no grupo '${message.chat.name}'... => [ !all ]`)
+                            await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Mencionando todos os membros no grupo '${message.chat.name}'... => [ !all ]`)
                             return;
                         }
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, administradores, message.id)
-                        await saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não adm. '${message.chat.name}' => [ !all ]`)
+                        await bot.reply(message.chat.id, constants.msg.administradores, message.id)
+                        await utils.saveLog(pathLog, `${timersLog}: [${author}] [WARN] User não adm. '${message.chat.name}' => [ !all ]`)
                     }
                 }
             }
@@ -687,15 +749,15 @@ function start(bot) {
                     await bot.sendTextWithMentions(groupChatId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
                     await bot.simulateTyping(groupChatId, true)
                     await bot.sendText(groupChatId, `${descGroup['description']}\n\nOBS: Digite *!help* para mais informações`)
-                    await saveLog(pathLog, `${timersLog}: [INFO] Adicionando novo usuário... => [ add event ]`)
+                    await utils.saveLog(pathLog, `${timersLog}: [INFO] Adicionando novo usuário... => [ add event ]`)
                 }
                 if (changeEvent.action === "remove") {
                     await bot.sendText(groupChatId, '👋 Menos um')
-                    await saveLog(pathLog, `${timersLog}: [INFO] Removendo usuário... => [ remove event]`)
+                    await utils.saveLog(pathLog, `${timersLog}: [INFO] Removendo usuário... => [ remove event]`)
                     return;
                 }
             } catch (err) {
-                await saveLog(pathLog, `${timersLog}: [ERROR] ${err}`)
+                await utils.saveLog(pathLog, `${timersLog}: [ERROR] ${err}`)
                 return;
             }
         }
