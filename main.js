@@ -4,6 +4,7 @@ const constants = require('./constants/constants');
 const { decryptMedia } = require('@open-wa/wa-automate');
 const { help } = require('./menus/help');
 const { langs } = require('./menus/lang');
+const shell = require('shelljs')
 const fs = require('fs');
 const yt = require('ytdl-core');
 const gTTS = require('gtts');
@@ -15,11 +16,13 @@ const api = new lib.ApiClashOfClans(constants.api.apiUrl, constants.api.auth)
 const utils = new util.Utils()
 const pathDir = path.resolve(__dirname, './data/db/users/db.json');
 const pathBlock = path.resolve(__dirname, './data/db/users/blocks.json');
+const pathBlockAll = path.resolve(__dirname, './data/db/users/blocksall.json')
 const pathLog = path.resolve(__dirname, './log/event.log');
 const setPrefix = path.resolve(__dirname, './data/db/users/prefix.txt');
 const setHour = path.resolve(__dirname, './data/db/users/hour.txt');
 const db = JSON.parse(fs.readFileSync(pathDir));
 const blocks = JSON.parse(fs.readFileSync(pathBlock));
+const blocksAll = JSON.parse(fs.readFileSync(pathBlockAll))
 const tasks = require('node-schedule')
 
 wa.create({
@@ -45,6 +48,7 @@ function start(bot) {
         const timersLog = `${time.getFullYear()}.${time.getMonth() >= 10 ? time.getMonth() + 1 : `0${time.getMonth() + 1}`}.${time.getDate() >= 10 ? time.getDate() : `0${time.getDate()}`} ${time.getHours() >= 10 ? time.getHours() : `0${time.getHours()}`}.${time.getMinutes() >= 10 ? time.getMinutes() : `0${time.getMinutes()}`}.${time.getSeconds() >= 10 ? time.getSeconds() : `0${time.getSeconds()}`}`
         const isRegister = db.includes(message.author)
         const isBlocked = blocks.includes(message.author)
+        const isBlockedAll = blocksAll.includes(message.author)
         const author = message.author.replace('@c.us', '')
         const isAuthor = message.author.includes(`${number}@c.us`)
 
@@ -64,7 +68,7 @@ function start(bot) {
             fs.writeFileSync(pathBlock, JSON.stringify(blocks))
             return;
         }
-        
+
         switch (message.author) {
             case '5521974234579@c.us':
                 await bot.react(message.id, '⛄')
@@ -75,8 +79,34 @@ function start(bot) {
                 return;
         }
 
+        // block interation users
+        if (message.body.startsWith('!block')) {
+            if (message.chat.isGroup) {
+                if (isBlockedAll) return;
+                const number = message.body.slice(7).replace('@', '')
+                for (let i = 0; i < blocksAll.length; i++){
+                    const isNumber = blocksAll[i]
+                    if (isNumber === number) return;
+                }   
+                blocksAll.push(number)
+                fs.writeFileSync(pathBlockAll, JSON.stringify(blocksAll))
+                return; 
+            }
+        }
+        // reset server
+        if (message.body === '!shutdown') {
+            if (message.chat.isGroup) {
+                if (isBlockedAll) return;
+                const getAdmins = await bot.getGroupAdmins(message.chat.id)
+                const isAdmin = getAdmins.includes(message.author)
+                if (isAdmin) shell.exec('shutdown -h now')
+                return;
+            }
+        }
+
         if (message.body.startsWith('!attacks')) {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const admins = await bot.getGroupAdmins(message.chat.id)
                 const isAdmin = admins.includes(message.author)
                 if (isAdmin) {
@@ -91,11 +121,43 @@ function start(bot) {
             }
         }
 
+        if (message.chat.id === '557488059907-1620062542@g.us') {
+            const lista = ['viado', 'Viado', 'VIADO']
+            for (let i = 0; i < lista.length; i++) {
+                const impr = lista[i]
+                if (message.body.includes(impr)) {
+                    const listName = ['Leonardo??? 😧🏳️‍🌈', 'Cego???? 🦌🏳️‍🌈', 'Fabs??? 🫣', 'Henrique?? 🧌📏']
+                    const getMsg = listName[Math.floor((Math.random() * listName.length))]
+                    await bot.reply(message.chat.id, getMsg, message.id)
+                    return;
+                }
+            }
 
+            let imprList = ['Fabricio', 'Fabs', 'fabs', 'fabricio']
+            for (let i = 0; i < imprList.length; i++) {
+                const impr = imprList[i]
+                if (message.body.includes(impr)) {
+                    await bot.simulateTyping(message.chat.id, true)
+                    await bot.sendImageAsSticker(message.chat.id, 'assets/images/fabs.webp')
+                    return;
+                }
+            }
+
+            imprList = ['Cego', 'cego']
+            for (let i = 0; i < imprList.length; i++) {
+                const impr = imprList[i]
+                if (message.body.includes(impr)) {
+                    await bot.simulateTyping(message.chat.id, true)
+                    await bot.sendImageAsSticker(message.chat.id, 'assets/images/cego.webp')
+                    return;
+                }
+            }
+        }
 
         //register
         if (message.body === '!register') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 if (isRegister) {
                     await bot.simulateTyping(message.chat.id, true)
                     await bot.reply(message.chat.id, '• Você já está registrado ❗', message.id)
@@ -114,6 +176,7 @@ function start(bot) {
         // send log
         if (message.body === `!getlog`) {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 if (!isAuthor) return await bot.reply(message.chat.id, constants.msg.ownerRequireMsg, message.id)
                 if (!isRegister) return await bot.reply(message.chat.id, constants.msg.msgRequire, message.id);
                 await bot.sendFile(message.chat.id, 'log/event.log', 'event.log', '• Arquivo de logs de eventos do bot!')
@@ -122,9 +185,9 @@ function start(bot) {
         }
 
         // send task
-        tasks.scheduleJob('*/15 * * * * *', () => {
+        tasks.scheduleJob('*/5 * * * * *', () => {
             const hour = fs.readFileSync(setHour, 'utf-8')
-            tasks.scheduleJob(`0 ${hour} * * *`, async () => { 
+            tasks.scheduleJob(`0 ${hour} * * *`, async () => {
                 const chatId = '557488562578-1624412670@g.us'
                 await bot.simulateTyping(chatId, true)
                 await bot.sendText(chatId, 'beep!!!')
@@ -136,15 +199,16 @@ function start(bot) {
         let command = message.body
         if (command.startsWith('!sethour')) {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const admins = await bot.getGroupAdmins(message.chat.id)
                 const isAdmin = admins.includes(message.author)
-                if (isAdmin){
+                if (isAdmin) {
                     const hour = command.slice(9)
                     const newHour = hour.replace(':', ' ')
                     const listHour = newHour.split(' ').reverse()
                     if (await utils.setHour(setHour, listHour.join().replace(',', ' '))) {
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.sendText(message.chat.id,  `• Hora atualizada para ${hour} com sucesso ✅`)
+                        await bot.sendText(message.chat.id, `• Hora atualizada para ${hour} com sucesso ✅`)
                         return;
                     }
                 }
@@ -157,6 +221,7 @@ function start(bot) {
         // change prefix
         if (command.startsWith('!setprefix')) {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const newPrefix = command.slice(11)
                 const isCheckRegex = constants.msg.regex
                 if (newPrefix.match(isCheckRegex) && newPrefix.length > 1) {
@@ -175,6 +240,7 @@ function start(bot) {
         // add participant
         if (command.slice(0, 4) === '!add') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const participants = message.chat.groupMetadata.participants
                 for (let i = 0; i < participants.length; i++) {
                     const isAdmin = participants[i]['isAdmin']
@@ -221,6 +287,7 @@ function start(bot) {
         // remove participant
         if (command.slice(0, 7) === '!remove') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const participants = message.chat.groupMetadata.participants
                 for (let i = 0; i < participants.length; i++) {
                     const isAdmin = participants[i]['isAdmin']
@@ -260,6 +327,7 @@ function start(bot) {
             if (os.platform() !== 'linux') return;
             if (!isRegister) return await bot.reply(message.chat.id, constants.msg.msgRequire, message.id);
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const lang = command.slice(7, 9)
                 const text = command.slice(10)
                 if (lang.length !== 2) return;
@@ -288,6 +356,7 @@ function start(bot) {
         // download video youtube
         if (command.slice(0, 9) === '!download') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 let format = command.slice(10, 13)
                 let link = command.slice(14)
                 let match = link.match(constants.msg.regExp)
@@ -335,6 +404,7 @@ function start(bot) {
         // promote participant
         if (command.slice(0, 8) === '!promote') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const isAdm = await bot.getGroupAdmins(message.chat.id)
                 let participantId = command.slice(9)
                 if (isAdm.includes(`${participantId.replace('@', '')}@c.us`)) {
@@ -382,6 +452,7 @@ function start(bot) {
         // demote participant
         if (command.slice(0, 7) === '!demote') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const isAdm = await bot.getGroupAdmins(message.chat.id)
                 let participantId = command.slice(8)
                 if (!isAdm.includes(`${participantId.replace('@', '')}@c.us`)) {
@@ -431,6 +502,7 @@ function start(bot) {
         // set description group
         if (command.slice(0, 8) === '!setdesc') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const listAdm = await message.chat.groupMetadata.participants
                 const setDesc = command.slice(9)
                 if (setDesc < 1) return;
@@ -456,6 +528,7 @@ function start(bot) {
         // get description group
         if (message.body === '!desc') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const getInfo = await bot.getGroupInfo(message.chat.id)
                 await bot.simulateTyping(message.chat.id)
                 await bot.reply(message.chat.id, `*${getInfo['description']}*`, message.id)
@@ -467,6 +540,7 @@ function start(bot) {
         // get admins
         if (message.body === '!admins') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const nameGroup = message.chat.name
                 const getAdmins = await bot.getGroupAdmins(message.chat.id)
                 let listAdmins = []
@@ -486,11 +560,14 @@ function start(bot) {
         if (message.type === 'image') {
             if (message.caption === '!scan') {
                 if (message.chat.isGroup) {
+                    if (isBlockedAll) return;
+                    let getImage1;
                     try {
                         const pathMedia = path.resolve('./media')
                         const image = fs.readdirSync(pathMedia)
                         for (let i = 0; i < image.length; i++) {
                             const getImage = `${pathMedia}/${image[i]}`
+                            getImage1 = getImage
                             const getText = await utils.extract(getImage)
                             await bot.reply(message.chat.id, getText, message.id)
                             await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Scanneando imagem... '${message.chat.name}' => [ !scan ]`)
@@ -498,8 +575,9 @@ function start(bot) {
                         }
                     } catch (err) {
                         await bot.simulateTyping(message.chat.id, true)
-                        await bot.reply(message.chat.id, '• Erro ao converter imagem para texto, tente novamente')
+                        await bot.reply(message.chat.id, '• Erro ao converter imagem para texto, tente novamente', message.id)
                         await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} '${message.chat.name}' => [ !scan ]`)
+                        return fs.unlinkSync(getImage1)
                     }
                 }
             }
@@ -509,6 +587,7 @@ function start(bot) {
         if (message.type === 'image') {
             if (message.caption === '!set') {
                 if (message.chat.isGroup) {
+                    if (isBlockedAll) return;
                     const participants = message.chat.groupMetadata.participants
                     for (let i = 0; i < participants.length; i++) {
                         const isAdmin = participants[i]['isAdmin']
@@ -534,6 +613,7 @@ function start(bot) {
         // send help
         if (message.body === '!help') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.reply(message.chat.id, help(), message.id)
                 await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando menu de ajuda... '${message.chat.name}' => [ !help ]`)
@@ -544,6 +624,7 @@ function start(bot) {
         // send code language
         if (message.body === '!lang') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.reply(message.chat.id, langs(), message.id)
                 await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando menu de idioma... '${message.chat.name}' => [ !lang ]`)
@@ -554,6 +635,7 @@ function start(bot) {
         //send contact owner
         if (message.body === '!criador') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 await bot.sendContact(message.chat.id, `${number}@c.us`)
                 await utils.saveLog(pathLog, `${timersLog}: [${author}] [INFO] Solicitando contado do DEV... '${message.chat.name}' => [ !criador ]`)
                 return;
@@ -563,6 +645,7 @@ function start(bot) {
         // send link group
         if (message.body === '!link') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const participants = message.chat.groupMetadata.participants
                 for (let i = 0; i < participants.length; i++) {
                     const isAdmin = participants[i]['isAdmin']
@@ -588,6 +671,7 @@ function start(bot) {
         // revoke link group
         if (message.body === '!revogar') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const participants = message.chat.groupMetadata.participants
                 for (let i = 0; i < participants.length; i++) {
                     const isAdmin = participants[i]['isAdmin']
@@ -626,6 +710,7 @@ function start(bot) {
             const isType = message.type
             if (message.caption === '!sticker') {
                 if (message.chat.isGroup) {
+                    if (isBlockedAll) return;
                     await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                     const decrypt = await decryptMedia(message)
                     const sticker = `data:${message.mimetype};base64,${decrypt.toString('base64')}`
@@ -653,6 +738,7 @@ function start(bot) {
                 if (message.quotedMsg.type === 'image' || message.quotedMsg.type === 'video') {
                     const isType = message.quotedMsg.type
                     if (message.chat.isGroup) {
+                        if (isBlockedAll) return;
                         await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                         const decrypt = await decryptMedia(message.quotedMsg)
                         const sticker = `data:${message.quotedMsg.mimetype};base64,${decrypt.toString('base64')}`
@@ -676,6 +762,7 @@ function start(bot) {
                     }
                 }
             } catch (err) {
+                if (isBlockedAll) return;
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.sendReplyWithMentions(message.chat.id, `*[${timers}]* Metadados error ❌\n\n› Este comando necessita de uma imagem ou vídeo.`, message.id)
                 await utils.saveLog(pathLog, `${timersLog}: [${author}] [ERROR] ${err} => [ !sticker ]`)
@@ -709,6 +796,7 @@ function start(bot) {
         // all mentions
         if (message.body === '!all') {
             if (message.chat.isGroup) {
+                if (isBlockedAll) return;
                 const participants = message.chat.groupMetadata.participants
                 for (let i = 0; i < participants.length; i++) {
                     const admin = participants[i]['isAdmin']
@@ -736,7 +824,7 @@ function start(bot) {
             }
         }
     });
-
+    
     // welcome
     const groupChatId = "120363222151732895@g.us";
     bot.onParticipantsChanged(

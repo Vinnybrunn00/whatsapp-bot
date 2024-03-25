@@ -82,3 +82,36 @@ Could not initialize tesseract.
 2024.03.17 02.30.06: [5521996580395] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
 2024.03.17 02.30.52: [5521996580395] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
 2024.03.17 02.49.12: [5521973807729] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.03.21 22.18.22: [557488422527] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.21 22.18.37: [557488422527] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.21 22.19.11: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.22 14.37.08: [557481453885] [INFO] Gerando fingurinha com imagem... 'Technognose Scaters Juazeiro' => [ !sticker ]
+2024.03.22 14.38.00: [557481453885] [INFO] Gerando sticker com imagem... 'Technognose Scaters Juazeiro' => [ !sticker ]
+2024.03.22 15.53.32: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'B' => [ !scan ]
+2024.03.22 15.54.32: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'B' => [ !scan ]
+2024.03.22 15.55.50: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'B' => [ !scan ]
+2024.03.22 15.58.30: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'B' => [ !scan ]
+2024.03.22 16.00.59: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'Teste Bot' => [ !scan ]
+2024.03.22 16.05.15: [557488700196] [INFO] Scanneando imagem... 'Teste Bot' => [ !scan ]
+2024.03.22 16.05.44: [557488700196] [INFO] Scanneando imagem... 'Teste Bot' => [ !scan ]
+2024.03.22 16.06.53: [557488700196] [INFO] Scanneando imagem... 'B' => [ !scan ]
+2024.03.22 16.09.04: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'Teste Bot' => [ !scan ]
+2024.03.22 16.11.19: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'Teste Bot' => [ !scan ]
+2024.03.22 16.12.16: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'Teste Bot' => [ !scan ]
+2024.03.22 16.13.38: [557488700196] [INFO] Scanneando imagem... 'Teste Bot' => [ !scan ]
+2024.03.22 16.14.14: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'B' => [ !scan ]
+2024.03.22 16.14.36: [557488700196] [INFO] Scanneando imagem... 'B' => [ !scan ]
+2024.03.22 16.15.18: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'messageSendResult')
+    at window.<computed>.<computed> [as reply] (pptr://__puppeteer_evaluation_script__:1:282420) 'B' => [ !scan ]
+2024.03.25 12.42.25: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.25 12.44.46: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.03.25 13.03.33: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]

@@ -21,6 +21,9 @@ const help = () => {
     │   Sobre: *Converte qualquer mensagem em áudio*
     │   Uso: \`\`\`!audio [lang] [text] \`\`\`
     │
+    ├─ › !shutdown 
+    │   Sobre: *Reinicia o servidor*
+    │
     └─────────────────────────
 
 • _Grupos_
@@ -44,10 +47,10 @@ const help = () => {
     ├─ › !desc
     │   Sobre: *Envia a descrição do grupo*
     │
-    ├─ › !promote [contato]
+    ├─ › !promote [@contato]
     │   Sobre: *Adiciona um membro na lista de admins*
     │
-    ├─ › !demote [contato]
+    ├─ › !demote [@contato]
     │   Sobre: *Remove um membro na lista de admins*
     │
     ├─ › !setDesc [descrição]
@@ -58,6 +61,9 @@ const help = () => {
     │
     ├─ › !scan [imagem]
     │   Sobre: *Extrai texto de uma imagem*
+    │
+    ├─ › !block [@contato]
+    │   Sobre: *Bloqueia os comandos*
     │
     └─────────────────────────
 
