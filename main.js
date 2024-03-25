@@ -14,6 +14,8 @@ const lib = require('./lib/apis')
 const util = require('./lib/utils')
 const api = new lib.ApiClashOfClans(constants.api.apiUrl, constants.api.auth)
 const utils = new util.Utils()
+const pathOwner = path.resolve(__dirname, './data/db/users/owner.json')
+const pathFlood = path.resolve(__dirname, './src/flood.js')
 const pathDir = path.resolve(__dirname, './data/db/users/db.json');
 const pathBlock = path.resolve(__dirname, './data/db/users/blocks.json');
 const pathBlockAll = path.resolve(__dirname, './data/db/users/blocksall.json')
@@ -23,6 +25,7 @@ const setHour = path.resolve(__dirname, './data/db/users/hour.txt');
 const db = JSON.parse(fs.readFileSync(pathDir));
 const blocks = JSON.parse(fs.readFileSync(pathBlock));
 const blocksAll = JSON.parse(fs.readFileSync(pathBlockAll))
+const readOwner = JSON.parse(fs.readFileSync(pathOwner))
 const tasks = require('node-schedule')
 
 wa.create({
@@ -49,15 +52,15 @@ function start(bot) {
         const isRegister = db.includes(message.author)
         const isBlocked = blocks.includes(message.author)
         const isBlockedAll = blocksAll.includes(message.author)
+        const isOwner = readOwner.includes(message.author.replace('@c.us', ''))
         const author = message.author.replace('@c.us', '')
         const isAuthor = message.author.includes(`${number}@c.us`)
-
+        
         if (message.body === '$debug') {
-            if (message.author === `${number}@c.us`) {
-                await bot.simulateTyping(message.chat.id, true)
-                await bot.reply(message.chat.id, `\`\`\`[200] - OK 🤖 ✔️ \`\`\``, message.id)
-                return;
-            }
+            if (!isOwner) return;
+            await bot.simulateTyping(message.chat.id, true)
+            await bot.reply(message.chat.id, `\`\`\`[200] - OK 🤖 ✔️ \`\`\``, message.id)
+            return;
         }
 
         if (!message.chat.isGroup) {
@@ -77,6 +80,15 @@ function start(bot) {
             case '557488092219@c.us':
                 await bot.react(message.id, '🚬')
                 return;
+        }
+
+        if (message.body.startsWith('!sendflood')) {
+            if (message.chat.isGroup){
+                if (!isOwner) return;
+                const sendFlood = await utils.sendFlood(pathFlood)
+                await bot.sendText(message.chat.id, sendFlood)
+                return;
+            }
         }
 
         // block interation users
