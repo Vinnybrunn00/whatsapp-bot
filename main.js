@@ -5,6 +5,7 @@ const { decryptMedia } = require('@open-wa/wa-automate');
 const { help } = require('./menus/help');
 const { langs } = require('./menus/lang');
 const shell = require('shelljs')
+const tasks = require('node-schedule')
 const fs = require('fs');
 const yt = require('ytdl-core');
 const gTTS = require('gtts');
@@ -26,7 +27,6 @@ const db = JSON.parse(fs.readFileSync(pathDir));
 const blocks = JSON.parse(fs.readFileSync(pathBlock));
 const blocksAll = JSON.parse(fs.readFileSync(pathBlockAll))
 const readOwner = JSON.parse(fs.readFileSync(pathOwner))
-const tasks = require('node-schedule')
 
 wa.create({
     sessionId: "COVID_HELPER",
@@ -51,16 +51,18 @@ function start(bot) {
         const timersLog = `${time.getFullYear()}.${time.getMonth() >= 10 ? time.getMonth() + 1 : `0${time.getMonth() + 1}`}.${time.getDate() >= 10 ? time.getDate() : `0${time.getDate()}`} ${time.getHours() >= 10 ? time.getHours() : `0${time.getHours()}`}.${time.getMinutes() >= 10 ? time.getMinutes() : `0${time.getMinutes()}`}.${time.getSeconds() >= 10 ? time.getSeconds() : `0${time.getSeconds()}`}`
         const isRegister = db.includes(message.author)
         const isBlocked = blocks.includes(message.author)
-        const isBlockedAll = blocksAll.includes(message.author)
+        const isBlockedAll = blocksAll.includes(message.author.replace('@c.us', ''))
         const isOwner = readOwner.includes(message.author.replace('@c.us', ''))
         const author = message.author.replace('@c.us', '')
         const isAuthor = message.author.includes(`${number}@c.us`)
         
         if (message.body === '$debug') {
-            if (!isOwner) return;
-            await bot.simulateTyping(message.chat.id, true)
-            await bot.reply(message.chat.id, `\`\`\`[200] - OK 🤖 ✔️ \`\`\``, message.id)
-            return;
+            if (message.chat.isGroup) {
+                if (!isOwner) return;
+                await bot.simulateTyping(message.chat.id, true)
+                await bot.reply(message.chat.id, `\`\`\`[200] - OK 🤖 ✔️ \`\`\``, message.id)
+                return;
+            }
         }
 
         if (!message.chat.isGroup) {
@@ -72,20 +74,11 @@ function start(bot) {
             return;
         }
 
-        switch (message.author) {
-            case '5521974234579@c.us':
-                await bot.react(message.id, '⛄')
-                return;
-
-            case '557488092219@c.us':
-                await bot.react(message.id, '🚬')
-                return;
-        }
-
         if (message.body.startsWith('!sendflood')) {
             if (message.chat.isGroup){
                 if (!isOwner) return;
                 const sendFlood = await utils.sendFlood(pathFlood)
+                await bot.simulateTyping(message.chat.id, true)
                 await bot.sendText(message.chat.id, sendFlood)
                 return;
             }
@@ -97,14 +90,17 @@ function start(bot) {
                 if (isBlockedAll) return;
                 const number = message.body.slice(7).replace('@', '')
                 for (let i = 0; i < blocksAll.length; i++){
-                    const isNumber = blocksAll[i]
-                    if (isNumber === number) return;
+                    let getNumber = blocksAll[i]
+                    if (getNumber === number) return;
                 }   
                 blocksAll.push(number)
                 fs.writeFileSync(pathBlockAll, JSON.stringify(blocksAll))
+                await bot.simulateTyping(message.chat.id, true)
+                await bot.reply(message.chat.id, `• Comandos bloqueados para @${number}@c.us`, message.id)
                 return; 
             }
         }
+
         // reset server
         if (message.body === '!shutdown') {
             if (message.chat.isGroup) {
@@ -130,39 +126,6 @@ function start(bot) {
                 await bot.simulateTyping(message.chat.id, true)
                 await bot.sendText(message.chat.id, constants.msg.userAdminRequireMsg)
                 return;
-            }
-        }
-
-        if (message.chat.id === '557488059907-1620062542@g.us') {
-            const lista = ['viado', 'Viado', 'VIADO']
-            for (let i = 0; i < lista.length; i++) {
-                const impr = lista[i]
-                if (message.body.includes(impr)) {
-                    const listName = ['Leonardo??? 😧🏳️‍🌈', 'Cego???? 🦌🏳️‍🌈', 'Fabs??? 🫣', 'Henrique?? 🧌📏']
-                    const getMsg = listName[Math.floor((Math.random() * listName.length))]
-                    await bot.reply(message.chat.id, getMsg, message.id)
-                    return;
-                }
-            }
-
-            let imprList = ['Fabricio', 'Fabs', 'fabs', 'fabricio']
-            for (let i = 0; i < imprList.length; i++) {
-                const impr = imprList[i]
-                if (message.body.includes(impr)) {
-                    await bot.simulateTyping(message.chat.id, true)
-                    await bot.sendImageAsSticker(message.chat.id, 'assets/images/fabs.webp')
-                    return;
-                }
-            }
-
-            imprList = ['Cego', 'cego']
-            for (let i = 0; i < imprList.length; i++) {
-                const impr = imprList[i]
-                if (message.body.includes(impr)) {
-                    await bot.simulateTyping(message.chat.id, true)
-                    await bot.sendImageAsSticker(message.chat.id, 'assets/images/cego.webp')
-                    return;
-                }
             }
         }
 
@@ -722,6 +685,7 @@ function start(bot) {
             const isType = message.type
             if (message.caption === '!sticker') {
                 if (message.chat.isGroup) {
+                    console.log(isBlockedAll)
                     if (isBlockedAll) return;
                     await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)
                     const decrypt = await decryptMedia(message)
