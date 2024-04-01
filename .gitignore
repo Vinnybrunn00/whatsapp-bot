@@ -3,8 +3,8 @@ package-lock.json
 session.data.json
 node_modules
 .node-persist
-COVID_HELPER.data.json
-_IGNORE_COVID_HELPER
+BOT.data.json
+_IGNORE_BOT
 
 # managed by open-wa
 **.data.json
@@ -19,4 +19,3 @@ test.js
 teste.js
 teste.ts
 assets/images/*
-src/
