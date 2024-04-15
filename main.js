@@ -1,9 +1,9 @@
 const wa = require('@open-wa/wa-automate');
 const os = require('os');
-const constants = require('../constants/constants');
+const constants = require('./constants/constants');
 const { decryptMedia } = require('@open-wa/wa-automate');
-const { help } = require('../menus/help');
-const { langs } = require('../menus/lang');
+const { help } = require('./menus/help');
+const { langs } = require('./menus/lang');
 const shell = require('shelljs')
 const tasks = require('node-schedule')
 const fs = require('fs');
@@ -11,18 +11,16 @@ const yt = require('ytdl-core');
 const gTTS = require('gtts');
 const path = require('path');
 const number = '557488700196'
-const lib = require('../lib/apis')
-const util = require('../lib/utils')
-const api = new lib.ApiClashOfClans(constants.api.apiUrl, constants.api.auth)
+const util = require('./lib/utils')
 const utils = new util.Utils()
-const pathOwner = path.resolve(__dirname, '../data/db/users/owner.json')
-const pathFlood = path.resolve(__dirname, '../src/flood.js')
-const pathDir = path.resolve(__dirname, '../data/db/users/db.json');
-const pathBlock = path.resolve(__dirname, '../data/db/users/blocks.json');
-const pathBlockAll = path.resolve(__dirname, '../data/db/users/blocksall.json')
-const pathLog = path.resolve(__dirname, '../log/event.log');
-const setPrefix = path.resolve(__dirname, '../data/db/users/prefix.txt');
-const setHour = path.resolve(__dirname, '../data/db/users/hour.txt');
+const pathOwner = path.resolve(__dirname, 'data/db/users/owner.json')
+const pathFlood = path.resolve(__dirname, 'src/flood.js')
+const pathDir = path.resolve(__dirname, 'data/db/users/db.json');
+const pathBlock = path.resolve(__dirname, 'data/db/users/blocks.json');
+const pathBlockAll = path.resolve(__dirname, 'data/db/users/blocksall.json')
+const pathLog = path.resolve(__dirname, 'log/event.log');
+const setPrefix = path.resolve(__dirname, 'data/db/users/prefix.txt');
+const setHour = path.resolve(__dirname, 'data/db/users/hour.txt')
 const db = JSON.parse(fs.readFileSync(pathDir));
 const blocks = JSON.parse(fs.readFileSync(pathBlock));
 const blocksAll = JSON.parse(fs.readFileSync(pathBlockAll))
@@ -112,23 +110,6 @@ function start(bot) {
             }
         }
 
-        if (message.body.startsWith('!attacks')) {
-            if (message.chat.isGroup) {
-                if (isBlockedAll) return;
-                const admins = await bot.getGroupAdmins(message.chat.id)
-                const isAdmin = admins.includes(message.author)
-                if (isAdmin) {
-                    const attacks = await api.AttackRaides()
-                    await bot.simulateTyping(message.chat.id, true)
-                    await bot.reply(message.chat.id, attacks, message.id)
-                    return;
-                }
-                await bot.simulateTyping(message.chat.id, true)
-                await bot.sendText(message.chat.id, constants.msg.userAdminRequireMsg)
-                return;
-            }
-        }
-
         if (message.chat.id === '557488059907-1620062542@g.us') {
             const lista = ['viado', 'Viado', 'VIADO']
             for (let i = 0; i < lista.length; i++) {
@@ -187,24 +168,13 @@ function start(bot) {
                 if (isBlockedAll) return;
                 if (!isAuthor) return await bot.reply(message.chat.id, constants.msg.ownerRequireMsg, message.id)
                 if (!isRegister) return await bot.reply(message.chat.id, constants.msg.msgRequire, message.id);
-                await bot.sendFile(message.chat.id, '../log/event.log', 'event.log', '• Arquivo de logs de eventos do bot!')
+                await bot.sendFile(message.chat.id, 'log/event.log', 'event.log', '• Arquivo de logs de eventos do bot!')
                 return;
             }
         }
-
-        // send task
-        tasks.scheduleJob('*/5 * * * * *', () => {
-            const hour = fs.readFileSync(setHour, 'utf-8')
-            tasks.scheduleJob(`0 ${hour} * * *`, async () => {
-                const chatId = '557488562578-1624412670@g.us'
-                await bot.simulateTyping(chatId, true)
-                await bot.sendText(chatId, 'beep!!!')
-                return;
-            })
-        })
-
+        
         // sethour
-        let command = message.body
+        const command = message.body
         if (command.startsWith('!sethour')) {
             if (message.chat.isGroup) {
                 if (isBlockedAll) return;
@@ -746,6 +716,7 @@ function start(bot) {
             try {
                 if (message.quotedMsg.type === 'image' || message.quotedMsg.type === 'video') {
                     const isType = message.quotedMsg.type
+                    console.log(isType)
                     if (message.chat.isGroup) {
                         if (isBlockedAll) return;
                         await bot.sendReplyWithMentions(message.chat.id, `\`\`\`[${timers}] - Solicitado por ${message.notifyName}\`\`\` \n\nAguarde...⌛`, message.id)

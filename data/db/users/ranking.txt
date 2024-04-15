@@ -1,47 +1,23 @@
-N   Nome   Tag   Level   CV   Role
+N   Nome CV   Role
 
-1  marcos          #PVRPP9J8  245  16  member
-2  MARCOS IGO      #L92CVYVR  222  15  admin
-3  google          #PGU0Q2CCP  214  16  leader
-4  LORD WILLIAM    #929QGPRUC  210  14  admin
-5  King Thiago     #G9GRL0GL  219  15  admin
-6  waldy777        #YGQQG9L2J  224  15  admin
-7  anderson terra  #8002JQ0GR  202  14  member
-8  Mr.Vinícius     #2PLU8QG0Y  224  15  admin
-9  bruno soares    #28PGYLPJQ  164  13  admin
-10  Ln             #PY8GC9C2Q  170  13  member
-11  Sr Caio  #8VG202JJC  151  13  member
-12  ❤JOSÉ❤  #9CCUV89VQ  210  14  coLeader
-13  Слиизун ™  #YLJJV8UCL  167  13  member
-14  CRP  #2L20L8G0G  253  16  admin
-15  junior  #GPJU9PLJ0  110  15  member
-16  SleepWalking  #2PPYUGJGG  222  16  admin
-17  Kim Jong-Un  #2G822V90G  200  14  admin
-18  Tuabuelita19  #LPU99V8QC  123  15  member
-19  FLASH ⚡  #Q08YYG8U9  168  14  admin
-20  fa  #QP2QJYUPJ  157  13  member
-21  MorettinhoBR  #9JL90LL9G  209  14  admin
-22  †ＲＥＮＥＧＡＤＯ†  #9YJYC0R8Q  216  14  member
-23  Miquéias  #2P9JPVY9G  192  14  admin
-24  ZEZE✌  #920R0Q88P  151  13  member
-25  SAMUEL.F  #LRL0L898Y  169  13  admin
-26  Gabriel  #P9L9PUVJ  160  13  member
-27  Priscila2  #9U229PR8  149  14  member
-28  Calango Drogado  #PJQV28RJ  215  14  member
-29  Deivid  #RP0QURUL  193  13  admin
-30  BudaGabriel  #GUQPVGPC  194  14  member
-31  MichelWars  #UYVLP09J  247  15  coLeader
-32  Leg110  #2Y0YGVYGU  182  13  member
-33  '-'Max Silva'-'  #2G2YGUJU  182  13  admin
-34  vinicius  #G9CJQJL0  166  13  member
-35  Biel  #8RVVP2QC2  228  15  coLeader
-36  DiEgO✌  #922JPVJG9  182  14  admin
-37  BlackSoul  #G02G2VPQR  104  13  member
-38  jpjohnnatan  #UQYV2RJJ  233  15  coLeader
-39  ARTHURR  #P9GYJVVL0  138  13  member
-40  EstrelaDaMorte  #LYV9L292  235  15  coLeader
-41  ™KAKAROTTO. ✟  #2UCVYLVQC  196  14  coLeader
-42  Rayleigh  #2YQY99G9Y  168  13  member
-43  PEU  #LQJ2JUV2C  193  14  coLeader
-44  César Júnior  #YJPU02L0  199  14  member
-45  Miguel  #QLLC8VGJR  70  13  member
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined
+undefined  undefined  undefined  undefined

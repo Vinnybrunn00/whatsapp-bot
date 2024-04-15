@@ -125,3 +125,45 @@ Could not initialize tesseract.
 2024.03.25 22.56.02: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
 2024.03.25 22.56.20: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
 2024.03.26 21.13.22: [557488700196] [INFO] Gerando sticker com imagem... 'Bresil👍🏽' => [ !sticker ]
+2024.04.07 03.09.15: [557488700196] [ERROR] TypeError: Cannot read properties of undefined (reading 'type') => [ !sticker ]
+2024.04.07 03.09.29: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.07 03.51.54: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.07 03.52.22: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.07 03.52.31: [557488700196] [INFO] Mencionando todos os membros no grupo 'Teste Bot'... => [ !all ]
+2024.04.07 03.52.39: [557488700196] [INFO] Send voice... 'Teste Bot' => [ !voice ]
+2024.04.07 03.55.30: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'removeParticipants')
+    at window.<computed> (pptr://__puppeteer_evaluation_script__:1:481803)
+    at window.<computed>.<computed> [as addParticipant] (pptr://__puppeteer_evaluation_script__:1:485986)
+    at pptr://__puppeteer_evaluation_script__:1:39 'Teste Bot' => [ !add ]
+2024.04.07 03.56.22: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'removeParticipants')
+    at window.<computed> (pptr://__puppeteer_evaluation_script__:1:481803)
+    at window.<computed>.<computed> [as addParticipant] (pptr://__puppeteer_evaluation_script__:1:485986)
+    at pptr://__puppeteer_evaluation_script__:1:39 'Teste Bot' => [ !add ]
+2024.04.07 03.56.37: [557488700196] [ERROR] Error: Evaluation failed: TypeError: Cannot read properties of undefined (reading 'removeParticipants')
+    at window.<computed> (pptr://__puppeteer_evaluation_script__:1:481803)
+    at window.<computed>.<computed> [as addParticipant] (pptr://__puppeteer_evaluation_script__:1:485986)
+    at pptr://__puppeteer_evaluation_script__:1:39 'Teste Bot' => [ !add ]
+2024.04.07 03.58.46: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.07 19.00.24: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.07 19.00.40: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.07 19.01.39: [557488700196] [ERROR] ADD_PARTICIPANTS_ERROR: NOT_A_CONTACT 'Teste Bot' => [ !add ]
+2024.04.07 19.01.51: [557488700196] [ERROR] ADD_PARTICIPANTS_ERROR: NOT_A_CONTACT 'Teste Bot' => [ !add ]
+2024.04.07 19.02.43: [557488700196] [ERROR] ADD_PARTICIPANTS_ERROR: NOT_A_CONTACT 'Teste Bot' => [ !add ]
+2024.04.07 19.02.53: [557488700196] [ERROR] ADD_PARTICIPANTS_ERROR: NOT_A_CONTACT 'Teste Bot' => [ !add ]
+2024.04.07 19.07.14: [557488700196] [INFO] Solicitando menu de ajuda... 'Teste Bot' => [ !help ]
+2024.04.07 19.07.29: [557488700196] [INFO] Solicitando link de convite... 'Teste Bot' => [ !link ]
+2024.04.07 19.09.31: [557488700196] [INFO] Solicitando descrição 'Teste Bot'... => [ !desc ]
+2024.04.07 19.09.50: [557488700196] [INFO] Atualizando descrição 'Teste Bot'... => [ !setdesc ]
+2024.04.07 19.10.28: [557488700196] [INFO] Atualizando imagem 'Teste Bot'... => [ !set ]
+2024.04.07 19.10.49: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.13 02.34.07: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.13 02.35.05: [557488700196] [INFO] Gerando fingurinha com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.13 03.30.38: [557488700196] [INFO] Gerando sticker com imagem... 'Teste Bot' => [ !sticker ]
+2024.04.13 13.20.24: [557488700196] [INFO] Mencionando todos os membros no grupo 'Teste Bot'... => [ !all ]
+2024.04.13 13.20.19: [557488700196] [INFO] Mencionando todos os membros no grupo 'Brazilian Elite'... => [ !all ]
+2024.04.13 13.21.27: [557488700196] [INFO] Mencionando todos os membros no grupo 'Teste Bot'... => [ !all ]
+2024.04.13 17.05.58: [557488700196] [INFO] Mencionando todos os membros no grupo 'Teste Bot'... => [ !all ]
+2024.04.13 17.09.09: [557488700196] [INFO] Solicitando menu de ajuda... 'Teste Bot' => [ !help ]
+2024.04.13 17.09.25: [557488700196] [INFO] Send vídeo... 'Teste Bot' => [ !download ]
+2024.04.14 00.36.16: [557488700196] [INFO] Solicitando menu de idioma... 'Teste Bot' => [ !lang ]
+2024.04.14 00.37.13: [557488700196] [INFO] Send voice... 'Teste Bot' => [ !voice ]
