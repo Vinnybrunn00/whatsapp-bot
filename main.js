@@ -127,7 +127,7 @@ function start(bot) {
                 const impr = imprList[i]
                 if (message.body.includes(impr)) {
                     await bot.simulateTyping(message.chat.id, true)
-                    await bot.sendImageAsSticker(message.chat.id, '../assets/images/fabs.webp')
+                    await bot.sendImageAsSticker(message.chat.id, 'assets/images/fabs.webp')
                     return;
                 }
             }
@@ -137,7 +137,7 @@ function start(bot) {
                 const impr = imprList[i]
                 if (message.body.includes(impr)) {
                     await bot.simulateTyping(message.chat.id, true)
-                    await bot.sendImageAsSticker(message.chat.id, '../assets/images/cego.webp')
+                    await bot.sendImageAsSticker(message.chat.id, 'assets/images/cego.webp')
                     return;
                 }
             }
@@ -232,7 +232,8 @@ function start(bot) {
                                     if (isAdmin) {
                                         try {
                                             const addNumber = command.slice(5)
-                                            const isAdd = await bot.addParticipant(message.chat.id, addNumber)
+                                            console.log(addNumber)
+                                            const isAdd = await bot.addParticipant(message.chat.id, `${addNumber}@c.us`)
                                             if (isAdd) {
                                                 await bot.simulateTyping(message.chat.id, true)
                                                 await bot.sendText(message.chat.id, '• Novo usuário adicionado ✅')
@@ -806,7 +807,7 @@ function start(bot) {
     });
     
     // welcome
-    const groupChatId = "120363222151732895@g.us";
+    const groupChatId = "120363040678895413@g.us";
     bot.onParticipantsChanged(
         groupChatId,
         async (changeEvent) => {

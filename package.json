@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@open-wa/wa-automate": "^4.71.8",
+    "@open-wa/wa-automate": "^4.71.9",
     "gtts": "^0.2.1",
     "node": "^18.17.0",
     "node-schedule": "^2.1.1",
