@@ -3,6 +3,8 @@ exports.msg = {
     programmer_msg: `*❗ Mensagem do Desenvolvedor* ❗\n\n "Comandos ou mensagens não funcionam no privado, crie grupos com o bot para usa-los"`,
     regExp: /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/,
     inappropriate: [],
+    invalidContact: 'Contato inválido ❗',
+    emptyContact: 'Este comando precisa de um contato ❗'
 }
 
 

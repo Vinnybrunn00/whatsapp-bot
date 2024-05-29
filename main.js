@@ -1,10 +1,10 @@
 const wa = require('@open-wa/wa-automate');
 const msg = require('./constants/constants').msg
-const config = require('./config/object').create;
 const lib = require('./lib/api');
 const lib2 = require('./lib/gnose_group')
 const help = require('./menus/menu').help
 const lang = require('./menus/langs').langs
+const config = require('./config/object').create;
 
 let api = new lib.BotApiUtils();
 let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
@@ -13,7 +13,7 @@ wa.create(config).then(bot => start(bot));
 
 function start(bot) {
     bot.onMessage(async message => {
-        if (message.chat.isGroup) return;
+        //if (message.chat.isGroup) return;
 
         const timer = api.getHour()
         const timeLog = api.hourLog()
@@ -23,8 +23,8 @@ function start(bot) {
                 await api.isOwner(message.author)
                     .then(async event => {
                         if (event) {
-                            await bot.reply(message.chat.id, msg.sendOk, message.id)
-                            return
+                            await bot.reply(message.from, msg.sendOk, message.id)
+                            return;
                         }
                     });
             } catch (err) {
@@ -47,10 +47,11 @@ function start(bot) {
             }).catch(async err => {
                 await api.saveLog(timeLog, message.author, 'ERROR', err, message.chat.name, ' => $debug')
                 return;
-            })
+            });
 
         if (message.body.startsWith('!demote')) {
-            await api.setDemote(message.body.slice(8), message, bot)
+            let contact = message.body.slice(8)
+            await api.setDemote(contact, message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
                         await bot.reply(message.from, msg, message.id)
@@ -62,20 +63,21 @@ function start(bot) {
         if (message.type === 'image' || message.type === 'video') {
             let typeFile = message.type
             if (message.caption === '!sticker') {
-                await api.sendResolveSticker(message.mimetype, typeFile, timer, message, bot)
+                await api.sendResolveSticker(message.mimetype, undefined, typeFile, timer, message, bot)
                     .then(async sticker => {
                         if (sticker !== null) {
                             if (typeFile === 'image') {
-                                await bot.sendImageAsSticker(message.chat.id, sticker, {
+                                await bot.sendImageAsSticker(message.from, sticker, {
                                     author: `${message.notifyName}`,
                                     keepScale: true,
                                     pack: 'hubberBot',
-                                })
+                                });
+                                return;
                             }
-                            await bot.sendMp4AsSticker(message.chat.id, sticker, { endTime: '00:00:07.0' }, {
+                            await bot.sendMp4AsSticker(message.from, sticker, { endTime: '00:00:07.0' }, {
                                 author: `${message.notifyName}`,
                                 pack: 'hubberBot',
-                            })
+                            });
                         }
                     }).catch(async err => {
                         await bot.reply(message.from, err, message.id)
@@ -87,28 +89,34 @@ function start(bot) {
 
         // message.quotedMsg.mimetype
         if (message.body === '!sticker') {
-            let typeFile = message.quotedMsg.type
-            if (message.quotedMsg.type === 'image' || message.quotedMsg.type === 'video') {
-                await api.sendResolveSticker(message.mimetype, message.quotedMsg, typeFile, timer, message, bot)
-                    .then(async sticker => {
-                        if (sticker !== null) {
-                            if (typeFile !== 'video') {
-                                await bot.sendImageAsSticker(message.chat.id, sticker, {
+            try {
+                let typeFile = message.quotedMsg.type
+                if (message.quotedMsg.type === 'image' || message.quotedMsg.type === 'video') {
+                    await api.sendResolveSticker(message.quotedMsg.mimetype, message.quotedMsg, typeFile, timer, message, bot)
+                        .then(async sticker => {
+                            if (sticker !== null) {
+                                if (typeFile !== 'video') {
+                                    await bot.sendImageAsSticker(message.chat.id, sticker, {
+                                        author: `${message.notifyName}`,
+                                        keepScale: true,
+                                        pack: 'hubberBot',
+                                    });
+                                    return;
+                                }
+                                await bot.sendMp4AsSticker(message.chat.id, sticker, { endTime: '00:00:07.0', }, {
                                     author: `${message.notifyName}`,
-                                    keepScale: true,
-                                    pack: 'hubberBot',
-                                });
+                                    pack: 'hubberBot'
+                                })
                             }
-                            await bot.sendMp4AsSticker(message.chat.id, sticker, { endTime: '00:00:07.0', }, {
-                                author: `${message.notifyName}`,
-                                pack: 'hubberBot'
-                            })
-                        }
-                    }).catch(async err => {
-                        await bot.reply(message.from, err, message.id)
-                        await api.saveLog(timeLog, message.author, 'ERROR', err, message.chat.name, ' => !sticker: quotedMsg')
-                        return;
-                    });
+                        }).catch(async err => {
+                            await bot.reply(message.from, err, message.id)
+                            await api.saveLog(timeLog, message.author, 'ERROR', err, message.chat.name, ' => !sticker: quotedMsg')
+                            return;
+                        });
+                }
+            } catch (_) {
+                await bot.reply(message.from, ' > Este comando precisa de uma imagem ou vídeo!', message.id)
+                return;
             }
         }
 
@@ -321,6 +329,4 @@ function start(bot) {
             }
         }
     });
-
-    // welcome
 }
