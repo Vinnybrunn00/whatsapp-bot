@@ -1,7 +1,8 @@
-_IGNORE_session
+
 package-lock.json
-session.data.json
 node_modules
+
+BOT.data.json
 
 # managed by open-wa
 **.data.json
