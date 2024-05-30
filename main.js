@@ -7,14 +7,12 @@ const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
 let api = new lib.BotApiUtils();
-let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
+let gnose = new lib2.GnoseGroup('557488562578-1624412670@g.us')
 
 wa.create(config).then(bot => start(bot));
 
 function start(bot) {
     bot.onMessage(async message => {
-        //if (message.chat.isGroup) return;
-
         const timer = api.getHour()
         const timeLog = api.hourLog()
 
@@ -54,7 +52,7 @@ function start(bot) {
             await api.setDemote(contact, message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
-                        await bot.reply(message.from, msg, message.id)
+                        await bot.sendReplyWithMentions(message.from, msg, message.id)
                         return;
                     }
                 });
@@ -198,7 +196,6 @@ function start(bot) {
                         for (let users of array) {
                             const user = users.replace('@c.us', '')
                             list.push(`➜ *@${user}*\n`)
-                            return;
                         }
                         const nList = list.toString()
                         await bot.sendReplyWithMentions(message.from, api.sendAdminsMentions(timer, message.chat.name, array, nList), message.id)
@@ -291,7 +288,7 @@ function start(bot) {
         }
 
         if (message.type === 'image' && message.caption === '!set') {
-            await api.setPhotoGroup(message)
+            await api.setPhotoGroup(message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
                         await bot.reply(message.from, msg, message.id)
