@@ -193,6 +193,14 @@ function start(bot) {
                 })
         }
 
+        gnose.reactGnose(message.author)
+            .then(async emoji => {
+                if (emoji !== undefined) {
+                    await bot.react(message.id, emoji)
+                    return;
+                }
+            });
+
         if (message.body.startsWith('!criador')) {
             await api.getOwner()
                 .then(async number => {

@@ -1,6 +1,7 @@
 {
     "dependencies": {
         "@open-wa/wa-automate": "^4.71.11",
+        "@tobyg74/tiktok-api-dl": "^1.1.4",
         "gtts": "^0.2.1",
         "node": "^18.17.0",
         "node-schedule": "^2.1.1",
