@@ -1,14 +1,13 @@
 {
     "dependencies": {
-      "@open-wa/wa-automate": "^4.71.11",
-      "gtts": "^0.2.1",
-      "node": "^18.17.0",
-      "node-schedule": "^2.1.1",
-      "node-tesseract-ocr": "^2.2.1",
-      "request": "^2.88.2",
-      "shelljs": "^0.8.5",
-      "uuid": "^9.0.1",
-      "ytdl-core": "^4.11.5"
+        "@open-wa/wa-automate": "^4.71.11",
+        "gtts": "^0.2.1",
+        "node": "^18.17.0",
+        "node-schedule": "^2.1.1",
+        "node-tesseract-ocr": "^2.2.1",
+        "request": "^2.88.2",
+        "shelljs": "^0.8.5",
+        "uuid": "^9.0.1",
+        "ytdl-core": "^4.11.5"
     }
-  }
-  
+}

@@ -1,13 +1,18 @@
 const wa = require('@open-wa/wa-automate');
 const msg = require('./constants/constants').msg
 const lib = require('./lib/api');
+const clash = require('./lib/clash')
+const utils = require('./utils/utils')
 const lib2 = require('./lib/gnose_group')
 const help = require('./menus/menu').help
+const cocHelp = require('./menus/coc_menu').helpCoc
 const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
 let api = new lib.BotApiUtils();
 let gnose = new lib2.GnoseGroup('557488562578-1624412670@g.us')
+let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC)
+let util = new utils.Utils()
 
 wa.create(config).then(bot => start(bot));
 
@@ -29,6 +34,66 @@ function start(bot) {
                 await api.saveLog(timeLog, message.author, 'ERROR', err, message.chat.name, ' => $debug')
                 return;
             }
+        }
+
+        // Clash Of Clans - Raids attacks
+        if (message.body.startsWith('!attacks')) {
+            if (message.chat.isGroup) return;
+
+            let players = [], player, info;
+
+            await apiCoc.resolveClans('capitalraidseasons')
+                .then(async raids => {
+                    for (let i = 0; i < raids.members.length; i++) {
+                        let infoRaids = util.sendInfoAttacks(raids.members[i]['name'], raids.members[i]['attacks'], raids.members[i]['attackLimit'], raids.members[i]['bonusAttackLimit'])
+                        if (raids.members[i]['attacks'] < 5) {
+                            players.push(`› ${infoRaids}`)
+                            player = players.toString();
+                        }
+                    }
+                    info = util.headerInfoRaid(timer, raids.state, raids.startTime, raids.endTime, raids.capitalTotalLoot, raids.totalAttacks, player !== undefined ? player.replace(/,/g, '') : '', players)
+                });
+
+            if (info !== undefined) {
+                await bot.reply(message.from, info, message.id)
+                return;
+            }
+        }
+
+        // Ranking Clã
+        if (message.body.startsWith('!clan')) {
+            if (message.chat.isGroup) return;
+            let _ranking = [], _names, _members;
+            await apiCoc.resolveClans('members')
+                .then(async members => {
+                    for (let i = 0; i < members.length; i++) {
+                        if (i === 10) break
+                        let infoRanking = util.sendRanking(i + 1, members[i].name)
+                        _ranking.push(infoRanking);
+                        _members = _ranking.toString()
+                    }
+                    _names = util.headerRanking(timer, message.chat.name, _members.replace(/,/g, ''))
+                });
+            if (_names !== undefined) {
+                await bot.reply(message.from, _names, message.id)
+                return;
+            }
+        }
+
+        // get players
+        if (message.body.startsWith('!tag')) {
+            let tag = message.body.slice(5)
+            await apiCoc.getPlayers(tag).then(async isEvent => {
+                try {
+                    if (isEvent !== undefined) {
+                        await bot.sendFile(message.from, `data/members/${isEvent}.json`, `${isEvent}.json`, '• Info Player')
+                        return;
+                    }
+                } catch (err) {
+                    await bot.reply(message.from, isEvent, message.id)
+                    return;
+                }
+            });
         }
 
         await gnose.sendWebp(message.body.toLowerCase(), message)
@@ -164,6 +229,9 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!help')) {
+            // configurar id do grupo para enviar o cocHelp
+            // nova fronteira
+            //*******/
             await bot.reply(message.from, help, message.id)
             return;
         }

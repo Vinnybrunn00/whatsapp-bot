@@ -1,44 +1,27 @@
 
-exports.helphelp = `
+exports.helpCoc = `
 「 *Informações do criador do Bot™* 」
 
 ★ GitHub : https://github.com/Vinnybrunn00
 
 *COMANDOS DO BOT™*
 
-• _Sticker Gerator
-    │
-    └─ › !sticker
-
-• _Utils_
-├───────────────────────
-│
-├─ › !download [format] [link]
-│   Sobre: *Baixa vídeos ou áudio do YouTube*
-│   Uso: \`\`\`!download mp4 || mp3 [link]\`\`\`
-│
-├─ › !voice
-│   Sobre: *Converte qualquer mensagem em áudio*
-│   Uso: \`\`\`!audio [lang] [text]\`\`\`
-│
-├─ › !shutdown 
-│   Sobre: *Reinicia o servidor*
-│
-├───────────────────────
-
-• _Grupos_
+• _Grupo_
 ├───────────────────────
 │
 ├─ › !all 
 │   Sobre: *Marca todos os membros do grupo*
 │
+├─ › !attacks 
+│   Sobre: *Ataques nas raids*
+│
+├─ › !tag [#tag]
+│   Sobre: *Informações gerais do player*
+│
 ├─ › !link
 │   Sobre: *Gera um link de convite do grupo*
 │
 ├─ › !revogar
-│   Sobre: *Revoga o link de convite do grupo*
-│
-├─ › !criador
 │   Sobre: *Revoga o link de convite do grupo*
 │
 ├─ › !admins
@@ -59,25 +42,8 @@ exports.helphelp = `
 ├─ › !set [imagem]
 │   Sobre: *Atualiza a imagem do grupo*
 │
-├─ › !scan [imagem]
-│   Sobre: *Extrai texto de uma imagem*
-│
 ├─ › !block [@contato]
 │   Sobre: *Bloqueia os comandos*
-│
-├───────────────────────
-
-• _Outros_
-├───────────────────────
-│
-├─ › !criador
-│   Sobre: *Envia o contado do desenvolvedor*
-│
-├─ › !lang
-│   Sobre: *Envia codigos do idioma(!audio)*
-│
-├─ › !getlog
-│   Sobre: *Send bot log file*
 │
 ├───────────────────────
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
