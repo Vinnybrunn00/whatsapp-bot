@@ -17,7 +17,7 @@ exports.helphelp = `
 │   Sobre: *Baixa vídeos ou áudio do YouTube*
 │   Uso: \`\`\`!download mp4 || mp3 [link]\`\`\`
 │
-├─ › !voice
+├─ › !voice [text]
 │   Sobre: *Converte qualquer mensagem em áudio*
 │   Uso: \`\`\`!audio [lang] [text]\`\`\`
 │

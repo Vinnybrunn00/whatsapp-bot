@@ -19,6 +19,8 @@ wa.create(config).then(bot => start(bot));
 
 function start(bot) {
     bot.onMessage(async message => {
+        if (await api.isBlock(message.author)) return;
+
         const timer = api.getHour()
         const timeLog = api.hourLog()
 
@@ -82,16 +84,28 @@ function start(bot) {
         // get players
         if (message.body.startsWith('!tag')) {
             if (!message.chat.isGroup) return;
-            let tag = message.body.slice(5)
-            await apiCoc.getPlayers(tag).then(async isEvent => {
-                try {
-                    if (isEvent !== undefined) {
-                        await bot.sendFile(message.from, `data/members/${isEvent}.json`, `${isEvent}.json`, '• Info Player')
+            await apiCoc.getPlayers(message.body.slice(5))
+                .then(async isEvent => {
+                    try {
+                        if (isEvent !== undefined) {
+                            await bot.sendFile(message.from, `data/members/${isEvent}.json`, `${isEvent}.json`, '• Info Player')
+                            return;
+                        }
+                    } catch (err) {
+                        await bot.reply(message.from, isEvent, message.id)
                         return;
                     }
-                } catch (err) {
-                    await bot.reply(message.from, isEvent, message.id)
-                    return;
+                });
+        }
+
+        if (message.body.startsWith('!block')) {
+            await api.isOwner(message.author).then(async isOwner => {
+                if (isOwner !== undefined && isOwner) {
+                    await api.blockCommands(message.body.slice(7))
+                        .then(async isBlock => {
+                            await bot.sendReplyWithMentions(message.from, isBlock, message.id)
+                            return;
+                        });
                 }
             });
         }
@@ -382,6 +396,7 @@ function start(bot) {
 
         if (message.type === 'image' && message.caption === '!set') {
             if (!message.chat.isGroup) return;
+            if (await api.isRegister(message.author)) return;
             await api.setPhotoGroup(message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
