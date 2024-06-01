@@ -110,6 +110,22 @@ function start(bot) {
             });
         }
 
+        await gnose.sendAudioGnose(message.body, message)
+            .then(async audio => {
+                if (audio !== undefined) {
+                    await bot.sendAudio(message.from, audio)
+                    return;
+                }
+            })
+
+        await gnose.sendMsgGnose(message.body.toLowerCase(), message)
+            .then(async msgGnose => {
+                if (msgGnose !== undefined) {
+                    await bot.reply(message.from, msgGnose, message.id)
+                    return;
+                }
+            });
+
         await gnose.sendWebp(message.body.toLowerCase(), message)
             .then(async webp => {
                 if (webp !== undefined) {

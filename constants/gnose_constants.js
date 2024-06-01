@@ -8,6 +8,21 @@ exports.gnoseWebpObj = {
     viado: ['Leonardo??? 😧🏳️‍🌈', 'Cego???? 🦌🏳️‍🌈', 'Fabs??? 🫣', 'Henrique?? 🧌📏'],
 }
 
+exports.audioGnoseObj = [
+    {
+        '!cafe': '../src/voice_gnose/cafe_pros_meninu.mp3',
+        '!vai_neymar': '../src/voice_gnose/vai_neymar.ogg',
+        _um: '../src/voice_gnose/...mp3',
+        _um: '../src/voice_gnose/...mp3',
+        _um: '../src/voice_gnose/...mp3',
+        _um: '../src/voice_gnose/...mp3',
+        _um: '../src/voice_gnose/...mp3',
+    }
+]
+
+exports.msgGnose = 'Ei mocinho, palavrão não 😤'
+exports.impr = ['porra', 'vai se fuder', 'puta', 'cego', 'vsfuder', 'desgraça', 'pqp', 'cu', 'leonardo']
+
 exports.objReact = [
     {
         user: [
