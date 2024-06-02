@@ -266,7 +266,7 @@ function start(bot) {
                     }
                 })
         }
-
+        // prompt event
         if (message.body.startsWith('!cmd')) {
             let cmd = message.body.slice(5)
             exec(cmd, async (_, stdout) => {
