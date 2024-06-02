@@ -11,7 +11,7 @@ const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
 let api = new lib.BotApiUtils();
-let gnose = new lib2.GnoseGroup('557488562578-1624412670@g.us')
+let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
 let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC)
 let util = new utils.Utils()
 
