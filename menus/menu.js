@@ -1,5 +1,5 @@
 
-exports.helphelp = `
+exports.help = `
 「 *Informações do criador do Bot™* 」
 
 ★ GitHub : https://github.com/Vinnybrunn00
