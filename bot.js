@@ -12,7 +12,7 @@ const config = require('./config/object').create;
 
 let api = new lib.BotApiUtils();
 let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
-let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC)
+let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC, '120363040678895413@g.us')
 let util = new utils.Utils()
 
 wa.create(config).then(bot => start(bot));
@@ -333,9 +333,16 @@ function start(bot) {
 
         if (message.body.startsWith('!help')) {
             if (message.chat.isGroup) {
-                await bot.reply(message.from, help, message.id)
+                if (message.from !== '120363040678895413@g.us') {
+                    await bot.reply(message.from, help, message.id)
+                        .then(async _ => {
+                            await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o help...`)
+                            return;
+                        });
+                }
+                await bot.reply(message.from, cocHelp, message.id)
                     .then(async _ => {
-                        await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o help...`)
+                        await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o helpCoc...`)
                         return;
                     })
                 return;
@@ -577,7 +584,7 @@ function start(bot) {
             }
         }
 
-        gnose.reactGnose(message.author, message).then(async emoji => {
+        await gnose.reactGnose(message.author, message).then(async emoji => {
             await api.isReact()
                 .then(async isOnOf => {
                     if (!isOnOf) return;
@@ -588,4 +595,16 @@ function start(bot) {
                 });
         });
     });
+
+    // welcome
+    apiCoc.sendWelcome(bot)
+        .then(async description => {
+            if (description !== undefined) {
+                await bot.sendText(apiCoc.groupId, `${description}`)
+                return;
+            }
+        }).catch(async err => {
+            await api.saveLogError(api.hourLog(), err, 'Nova Fronteira', 'sendWelcome()')
+            return;
+        });
 }

@@ -21,7 +21,7 @@ exports.audioGnoseObj = [
 ]
 
 exports.msgGnose = 'Ei mocinho, palavrão não 😤'
-exports.impr = ['porra', 'vai se fuder', 'puta', 'cego', 'vsfuder', 'desgraça', 'pqp', 'cu', 'leonardo']
+exports.impr = ['porra', 'vai se fuder', 'puta', 'vsf', 'desgraça', 'pqp', 'desgraca', 'vtnc']
 
 exports.objReact = [
     {
