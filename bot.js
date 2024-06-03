@@ -127,7 +127,7 @@ function start(bot) {
                 }
             })
 
-        await gnose.sendMsgGnose(message.body.toLowerCase(), message)
+        await gnose.sendMsgGnose(message.body.toLowerCase(), message.from, message.type)
             .then(async msgGnose => {
                 if (msgGnose !== undefined) {
                     await bot.reply(message.from, msgGnose, message.id)
