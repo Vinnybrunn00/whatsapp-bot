@@ -123,8 +123,8 @@ function start(bot) {
         if (message.body.startsWith('!br')) {
             await apiLpf.getRankingCamp().then(async infoCamp => {
                 if (infoCamp === undefined) return;
-                await fetch(`${apiLpf.baseUrl}/campeonatos/10`,
-                    { headers: apiLpf.apiKey }).then(async response => {
+                await fetch(`${msg.baseUrlFut}/campeonatos/10`,
+                    { headers: apiLpf.headers }).then(async response => {
                         if (response.status === 200) {
                             let resp = response.json()
                             banner = apiLpf.resolveBanner(
