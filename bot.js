@@ -2,6 +2,7 @@ const wa = require('@open-wa/wa-automate');
 const msg = require('./constants/constants').msg
 const lib = require('./lib/api');
 const clash = require('./lib/clash')
+const lfp = require('./lib/lpf_group')
 const utils = require('./utils/utils')
 const lib2 = require('./lib/gnose_group');
 const { exec } = require('child_process');
@@ -11,6 +12,7 @@ const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
 let api = new lib.BotApiUtils();
+let apiLpf = new lfp.LpfGroup(msg.baseUrlFut, msg.apiKeyFut)
 let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
 let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC, '120363040678895413@g.us')
 let util = new utils.Utils()
@@ -21,8 +23,8 @@ function start(bot) {
     bot.onMessage(async message => {
         if (await api.isBlock(message.author)) return;
 
-        const timer = api.getHour()
-        const timeLog = api.hourLog()
+        let timer = api.getHour()
+        let timeLog = api.hourLog()
 
         if (message.body === '$debug') {
             try {
@@ -116,6 +118,22 @@ function start(bot) {
                         return;
                     });
                 }
+            });
+        }
+        if (message.body.startsWith('!br')) {
+            await apiLpf.getRankingCamp().then(async infoCamp => {
+                if (infoCamp === undefined) return;
+                await fetch(`${apiLpf.baseUrl}/campeonatos/10`,
+                    { headers: apiLpf.apiKey }).then(async response => {
+                        if (response.status === 200) {
+                            let resp = response.json()
+                            banner = apiLpf.resolveBanner(
+                                resp.edicao_atual.nome_popular, timer, resp.status, resp.rodada_atual.rodada, resp.rodada_atual.status
+                            );
+                            await bot.reply(message.from, `${banner}${infoCamp}`, message.id)
+                            return;
+                        }
+                    });
             });
         }
 
