@@ -14,7 +14,7 @@ const config = require('./config/object').create;
 let api = new lib.BotApiUtils();
 let apiLpf = new lfp.LpfGroup(msg.baseUrlFut, msg.apiKeyFut)
 let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
-let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC, '120363040678895413@g.us')
+let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC, '557488562578-1624412670@g.us') //120363040678895413@g.us
 let util = new utils.Utils()
 
 wa.create(config).then(bot => start(bot));
@@ -130,7 +130,7 @@ function start(bot) {
                             banner = apiLpf.resolveBanner(
                                 resp.edicao_atual.nome_popular, timer, resp.status, resp.rodada_atual.rodada, resp.rodada_atual.status
                             );
-                            await bot.reply(message.from, `${banner}${infoCamp}`, message.id)
+                            await bot.reply(message.from, `${banner}${infoCamp.replace(/,/g, '')}`, message.id)
                             return;
                         }
                     });
