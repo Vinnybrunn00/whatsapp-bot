@@ -121,6 +121,7 @@ function start(bot) {
                 }
             });
         }
+
         if (message.body.startsWith('!br')) {
             await apiLpf.getRankingCamp().then(async infoCamp => {
                 if (infoCamp === undefined) return;
@@ -128,7 +129,7 @@ function start(bot) {
                     { headers: apiLpf.headers }).then(async response => {
                         if (response.status === 200) {
                             let resp = await response.json()
-                            banner = apiLpf.resolveBanner(
+                            let banner = apiLpf.resolveBanner(
                                 resp.edicao_atual.nome_popular, timer, resp.status, resp.rodada_atual.rodada, resp.rodada_atual.status
                             );
                             await bot.reply(message.from, `${banner}${infoCamp.replace(/,/g, '')}`, message.id)
@@ -136,6 +137,16 @@ function start(bot) {
                         }
                     });
             });
+        }
+
+        if (message.body.startsWith('!rodada')) {
+            let round = message.body.slice(8)
+            await apiLpf.getRounds(round)
+                .then(async clashes => {
+                    let clashs = apiLpf.resolveRounds(timer, round, clashes.replace(/,/g, ''))
+                    await bot.reply(message.from, clashs, message.id)
+                    return;
+                });
         }
 
         await gnose.sendAudioGnose(message.body, message)
