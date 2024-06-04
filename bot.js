@@ -143,8 +143,13 @@ function start(bot) {
             let round = message.body.slice(8)
             await apiLpf.getRounds(round)
                 .then(async clashes => {
-                    let clashs = apiLpf.resolveRounds(timer, round, clashes.replace(/,/g, ''))
-                    await bot.reply(message.from, clashs, message.id)
+                    if (clashes !== undefined) {
+                        let clashs = apiLpf.resolveRounds(timer, round, clashes.replace(/,/g, ''))
+                        await bot.reply(message.from, clashs, message.id)
+                        return;
+                    }
+                }).catch(async err => {
+                    await api.saveLogError(timeLog, err, message.chat.name, '!rodada')
                     return;
                 });
         }
