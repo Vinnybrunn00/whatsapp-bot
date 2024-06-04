@@ -358,6 +358,7 @@ function start(bot) {
                             await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o help...`)
                             return;
                         });
+                    return;
                 }
                 await bot.reply(message.from, cocHelp, message.id)
                     .then(async _ => {
