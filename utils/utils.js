@@ -1,10 +1,8 @@
 
 class Utils {
-    
-
     // headers
     headerInfoRaid(timers, states, startTime, endTime, capitalTotal, totalAttacks, attackLog, players) {
-        return `--------- 〘 _5 OU MAIS ATAQUES_ 〙 ---------\n\n \`\`\`[${timers}]\`\`\` - *Raids ${states !== 'ongoing' ? 'fechada' : 'em andamento'}*\n ⏳ *Início: ${this.resolveDate(startTime)}*\n 🕗 *Fim: ${this.resolveDate(endTime)}* \n ➜ *${capitalTotal} Capital Total*\n ➜ *${totalAttacks} Ataques totais*\n\n${players.length === 0 ? '> ❗ Nenhum ataque para informar no momento, tente depois ❗' : attackLog}`
+        return `--------- 〘 _MENOS DE 5 ATAQUES_ 〙 ---------\n\n \`\`\`[${timers}]\`\`\` - *Raids ${states !== 'ongoing' ? 'fechada' : 'em andamento'}*\n ⏳ *Início: ${this.resolveDate(startTime)}*\n 🕗 *Fim: ${this.resolveDate(endTime)}* \n ➜ *${capitalTotal} Capital Total*\n ➜ *${totalAttacks} Ataques totais*\n\n${players.length === 0 ? '> ❗ Nenhum ataque para informar no momento, tente depois ❗' : attackLog}`
     }
     headerRanking(timers, clanName, names) {
         return `--------- 〘 _Ranking - 10 melhores_ 〙 ---------\n\n \`\`\`[${timers}]\`\`\`➣ *${clanName}* \n\n${names}`
@@ -28,6 +26,5 @@ class Utils {
         return time.toLocaleString('pt-br').slice(0, -3).replace(',', ' -') + 'h'
     }
 }
-
 
 exports.Utils = Utils;
