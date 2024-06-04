@@ -154,6 +154,18 @@ function start(bot) {
                 });
         }
 
+        if (message.body.startsWith('!artilheiros')) {
+            await apiLpf.getTopScorer()
+                .then(async topScorer => {
+                    let players = apiLpf.resolveScorerBanner(timer, topScorer.replace(/,/g, ''))
+                    await bot.reply(message.from, players, message.id)
+                    return;
+                }).catch(async err => {
+                    await api.saveLogError(timeLog, err, message.chat.name, '!artilheiros')
+                    return;
+                });
+        }
+
         await gnose.sendAudioGnose(message.body, message)
             .then(async audio => {
                 if (audio !== undefined) {
