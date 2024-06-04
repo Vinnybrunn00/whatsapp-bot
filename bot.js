@@ -126,7 +126,7 @@ function start(bot) {
                 await fetch(`${msg.baseUrlFut}/campeonatos/10`,
                     { headers: apiLpf.headers }).then(async response => {
                         if (response.status === 200) {
-                            let resp = response.json()
+                            let resp = await response.json()
                             banner = apiLpf.resolveBanner(
                                 resp.edicao_atual.nome_popular, timer, resp.status, resp.rodada_atual.rodada, resp.rodada_atual.status
                             );
