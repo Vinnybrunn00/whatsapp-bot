@@ -633,6 +633,14 @@ function start(bot) {
             }
         }
 
+        await apiLpf.reactLpf(message.author)
+            .then(async emoji => {
+                if (emoji !== undefined) {
+                    await bot.react(message.id, emoji)
+                    return;
+                }
+            });
+
         await gnose.reactGnose(message.author, message).then(async emoji => {
             await api.isReact()
                 .then(async isOnOf => {
