@@ -174,8 +174,9 @@ function start(bot) {
                 }
             })
 
-        await gnose.sendMsgGnose(message.body.toLowerCase(), message.from, message.type)
+        await gnose.sendMsgGnose(message.body.toLowerCase(), message.from)
             .then(async msgGnose => {
+                if (message.type === 'image' && message.type === 'video') return;
                 if (msgGnose !== undefined) {
                     await bot.reply(message.from, msgGnose, message.id)
                     return;
