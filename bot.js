@@ -177,7 +177,10 @@ function start(bot) {
         }
 
         if (message.mediaData.type === 'sticker') {
+            console.log('!sticker')
             if (message.mediaData.filehash === hashSapo) {
+                console.log(message.mediaData.filehash)
+                console.log(hashSapo)
                 try {
                     await bot.deleteMessage(message.from, message.id)
                     return;
