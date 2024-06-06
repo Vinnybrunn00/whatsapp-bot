@@ -57,9 +57,9 @@ function start(bot) {
                     }
                     info = util.headerInfoRaid(timer, raids.state, raids.startTime, raids.endTime, raids.capitalTotalLoot, raids.totalAttacks, player !== undefined ? player.replace(/,/g, '') : '', players)
                 });
-
             if (info !== undefined) {
                 await bot.reply(message.from, info, message.id)
+                await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou os ataques nas raids...`)
                 return;
             }
         }
@@ -80,6 +80,7 @@ function start(bot) {
                 });
             if (_names !== undefined) {
                 await bot.reply(message.from, _names, message.id)
+                await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou ranking do clã...`)
                 return;
             }
         }
@@ -92,6 +93,7 @@ function start(bot) {
                     try {
                         if (isEvent !== undefined) {
                             await bot.sendFile(message.from, `data/members/${isEvent}.json`, `${isEvent}.json`, '• Info Player')
+                            await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou as informações gerais da conta...`)
                             return;
                         }
                     } catch (err) {
@@ -108,7 +110,7 @@ function start(bot) {
                     await api.blockCommands(message.body.slice(7)).then(async isBlock => {
                         await bot.sendReplyWithMentions(message.from, isBlock, message.id)
                             .then(async _ => {
-                                await api.saveLogInfo(timeLog, `${message.notifyName} Bloqueado...`)
+                                await api.saveLogInfo(timeLog, `${message.notifyName} Bloqueou algum contato...`)
                                 return;
                             }).catch(async err => {
                                 if (err !== undefined) {
@@ -133,6 +135,7 @@ function start(bot) {
                                 resp.edicao_atual.nome_popular, timer, resp.status, resp.rodada_atual.rodada, resp.rodada_atual.status
                             );
                             await bot.reply(message.from, `${banner}${infoCamp.replace(/,/g, '')}`, message.id)
+                            await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou a classificação do brasileirão...`)
                             return;
                         }
                     });
@@ -145,6 +148,7 @@ function start(bot) {
                 .then(async clashes => {
                     if (clashes !== undefined) {
                         let clashs = apiLpf.resolveRounds(timer, round, clashes.replace(/,/g, ''))
+                        await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou os jogos da rodada do brasileirão...`)
                         await bot.reply(message.from, clashs, message.id)
                         return;
                     }
@@ -158,6 +162,7 @@ function start(bot) {
             await apiLpf.getTopScorer()
                 .then(async topScorer => {
                     let players = apiLpf.resolveScorerBanner(timer, topScorer.replace(/,/g, ''))
+                    await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou a artilharia do brasileirão...`)
                     await bot.reply(message.from, players, message.id)
                     return;
                 }).catch(async err => {
@@ -165,6 +170,14 @@ function start(bot) {
                     return;
                 });
         }
+
+        await gnose.sendMentionGnose(message.body, message.from)
+            .then(async mention => {
+                if (mention !== undefined) {
+                    await bot.reply(message.from, mention, message.id)
+                    return;
+                }
+            })
 
         await gnose.sendAudioGnose(message.body, message)
             .then(async audio => {
@@ -208,7 +221,7 @@ function start(bot) {
                     if (msg !== undefined) {
                         await bot.sendReplyWithMentions(message.from, msg, message.id)
                             .then(async _ => {
-                                await api.saveLogInfo(timeLog, `${contact} provido...`)
+                                await api.saveLogInfo(timeLog, `${message.notifyName} promoveu ${contact} a admin...`)
                                 return;
                             }).catch(async err => {
                                 await api.saveLogError(timeLog, err, message.chat.name, '!demote')
@@ -226,7 +239,7 @@ function start(bot) {
                 .then(async msg => {
                     await bot.sendReplyWithMentions(message.from, msg, message.id)
                         .then(async _ => {
-                            await api.saveLogInfo(timeLog, `${contact} desbloqueado...`)
+                            await api.saveLogInfo(timeLog, `${message.notifyName} desbloqueou ${contact}...`)
                             return;
                         })
                     return;
@@ -282,14 +295,15 @@ function start(bot) {
                                         keepScale: true,
                                         pack: 'hubberBot',
                                     });
-                                    await api.saveLogInfo(timeLog, `${message.notifyName} gerou uma figurinha com vídeo...`)
+                                    await api.saveLogInfo(timeLog, `${message.notifyName} gerou uma figurinha com imagem...`)
                                     return;
                                 }
                                 await bot.sendMp4AsSticker(message.chat.id, sticker, { endTime: '00:00:07.0', }, {
                                     author: `${message.notifyName}`,
                                     pack: 'hubberBot'
                                 });
-                                await api.saveLogInfo(timeLog, `${message.notifyName} gerou uma figurinha com imagem...`)
+                                await api.saveLogInfo(timeLog, `${message.notifyName} gerou uma figurinha com video...`)
+                                return;
                             }
                         }).catch(async err => {
                             await bot.reply(message.from, err, message.id)
@@ -332,6 +346,9 @@ function start(bot) {
                             .then(async _ => {
                                 await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o contato...`)
                                 return;
+                            }).catch(async err => {
+                                await api.saveLogError(timeLog, err, message.chat.name, '!criador')
+                                return;
                             })
                         return;
                     }
@@ -347,9 +364,11 @@ function start(bot) {
                             .then(async _ => {
                                 await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou a descrição do grupo...`)
                                 return;
-                            })
-                        return;
+                            });
                     }
+                }).catch(async err => {
+                    await api.saveLogError(timeLog, err, message.chat.name, '!desc')
+                    return
                 })
         }
 
@@ -362,10 +381,12 @@ function start(bot) {
                             .then(async _ => {
                                 await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o link do grupo...`)
                                 return;
-                            })
-                        return;
+                            });
                     }
-                });
+                }).catch(async err => {
+                    await api.saveLogError(timeLog, err, message.chat.name, '!link')
+                    return;
+                })
         }
 
         if (message.body.startsWith('!lang')) {
@@ -407,10 +428,13 @@ function start(bot) {
                             .then(async _ => {
                                 await api.saveLogInfo(timeLog, `${message.notifyName} Revogou o link do grupo...`)
                                 return;
-                            })
+                            });
                         return;
                     }
-                });
+                }).catch(async err => {
+                    await api.saveLogError(timeLog, err, message.chat.name, '!revogar')
+                    return;
+                })
         }
 
         if (message.body.startsWith('!all')) {
@@ -525,7 +549,10 @@ function start(bot) {
                         await api.saveLogInfo(timeLog, `${message.notifyName} Baixou ${link}...`)
                         return;
                     }
-                })
+                }).catch(async err => {
+                    await api.saveLogError(timeLog, err, message.chat.name, '!download')
+                    return;
+                });
         }
 
         if (message.body.startsWith('!voice')) {

@@ -5,7 +5,10 @@ exports.gnoseWebpObj = {
     cego: 'assets/webp/cego.webp',
     gugas: 'assets/webp/gugas.webp',
     gustavo: 'assets/webp/gugas.webp',
+    cauã: 'assets/webp/caua.webp',
+    caua: 'assets/webp/caua.webp',
     viado: ['Leonardo??? 😧🏳️‍🌈', 'Cego???? 🦌🏳️‍🌈', 'Fabs??? 🫣', 'Henrique?? 🧌📏'],
+    gay: ['Leonardo??? 😧🏳️‍🌈', 'Cego???? 🦌🏳️‍🌈', 'Fabs??? 🫣', 'Henrique?? 🧌📏'],
 }
 
 exports.audioGnoseObj = [
@@ -20,7 +23,8 @@ exports.audioGnoseObj = [
     }
 ]
 
-exports.msgGnose = 'Ei mocinho, palavrão não 😤'
+exports.msgMentionsGnose = ['Viado mencionado 🦌', 'Corno mencionado 🐂', 'Mais um corno mencionado 🐂', 'Mais um viado mencionado 🦌', 'Esse aí ja foi estuprado...']
+exports.msgGnose = ['Ei mocinho, palavrão não 😤', 'Para de xingar, seu viado', 'Se xingar de novo é viado', 'L... mandou você parar de xingar.']
 exports.impr = ['porra', 'vai se fuder', 'puta', 'vsf', 'desgraça', 'pqp', 'desgraca', 'vtnc']
 
 exports.objReact = [
