@@ -11,6 +11,8 @@ const cocHelp = require('./menus/coc_menu').helpCoc
 const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
+const hashSapo = require('./constants/gnose_constants').hashWebpSapo
+
 let api = new lib.BotApiUtils();
 let apiLpf = new lfp.LpfGroup(msg.baseUrlFut, msg.apiKeyFut)
 let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
@@ -172,6 +174,18 @@ function start(bot) {
                     await api.saveLogError(timeLog, err, message.chat.name, '!artilheiros')
                     return;
                 });
+        }
+
+        if (message.mediaData.type === 'sticker') {
+            if (message.mediaData.filehash === hashSapo) {
+                try {
+                    await bot.deleteMessage(message.from, message.id)
+                    return;
+                } catch (err) {
+                    await api.saveLogError(timeLog, err, message.chat.name, 'Delete Sticker')
+                    return;
+                }
+            }
         }
 
         await gnose.sendMentionGnose(message.body, message.from)

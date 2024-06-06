@@ -38,3 +38,5 @@ exports.objReact = [
         ]
     }
 ]
+
+exports.hashWebpSapo = 'u56aZd7VXG9eob4cGysfq6k/WohYjxwJ/n0xJKFrWuY='
