@@ -23,7 +23,10 @@ function start(bot) {
     bot.onMessage(async message => {
         if (await api.isBlock(message.author)) return;
 
+        console.log(message)
+
         let timer, timeLog;
+
         await api.getHour().then(T => timer = T);
         await api.hourLog().then(T => timeLog = T);
 
@@ -204,7 +207,7 @@ function start(bot) {
                         return;
                     }
                     let getMsg = webp[Math.floor((Math.random() * webp.length))];
-                    await bot.reply(message.chat.id, getMsg, message.id)
+                    await bot.reply(message.from, getMsg, message.id)
                     return;
                 }
             }).catch(async err => {

@@ -24,7 +24,7 @@ exports.audioGnoseObj = [
 ]
 
 exports.msgMentionsGnose = ['Viado mencionado 🦌', 'Corno mencionado 🐂', 'Mais um corno mencionado 🐂', 'Mais um viado mencionado 🦌', 'Esse aí ja foi estuprado...']
-exports.msgGnose = ['Ei mocinho, palavrão não 😤', 'Para de xingar, seu viado', 'Se xingar de novo é viado', 'L... mandou você parar de xingar.']
+exports.msgGnose = ['Ei mocinho, palavrão não 😤', 'Para de xingar, seu viado', 'Se xingar de novo, é viado']
 exports.impr = ['porra', 'vai se fuder', 'puta', 'vsf', 'desgraça', 'pqp', 'desgraca', 'vtnc']
 
 exports.objReact = [
