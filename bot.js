@@ -25,8 +25,6 @@ function start(bot) {
     bot.onMessage(async message => {
         if (await api.isBlock(message.author)) return;
 
-        console.log(message)
-
         let timer, timeLog;
 
         await api.getHour().then(T => timer = T);
@@ -177,10 +175,7 @@ function start(bot) {
         }
 
         if (message.mediaData.type === 'sticker') {
-            console.log('!sticker')
             if (message.mediaData.filehash === hashSapo) {
-                console.log(message.mediaData.filehash)
-                console.log(hashSapo)
                 try {
                     await bot.deleteMessage(message.from, message.id)
                     return;
