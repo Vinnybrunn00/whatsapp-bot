@@ -211,7 +211,7 @@ function start(bot) {
 
         await gnose.sendReactquoted(message, message.from)
             .then(async sendquoted => {
-                if (sendquoted !== undefined) {
+                if (sendquoted !== undefined && message.body.length < 15) {
                     if (message.body.includes('?')) {
                         let _gen = Math.floor((Math.random() * sendXing.length))
                         await bot.reply(message.from, sendXing[_gen], message.id)

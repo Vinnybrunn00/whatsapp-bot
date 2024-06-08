@@ -26,7 +26,7 @@ exports.audioGnoseObj = [
 exports.msgMentionsGnose = ['Viado mencionado 🦌', 'Corno mencionado 🐂', 'Mais um corno mencionado 🐂', 'Mais um viado mencionado 🦌', 'Esse aí ja foi estuprado...']
 exports.msgGnose = ['Ei mocinho, palavrão não 😤', 'Para de xingar, seu viado', 'Se xingar de novo, é viado']
 exports.impr = ['porra', 'vai se fuder', 'puta', 'vsf', 'desgraça', 'pqp', 'desgraca', 'vtnc']
-exports.sendQuotedMsg = ['Ta me marcando pq, seu viado?', 'Tome no cu por isso', 'Não falo com viado não']
+exports.sendQuotedMsg = ['Ta me marcando pq, seu viado?', 'Não falo com viado não', 'Se me marcar de novo, é Lulinha.']
 exports.xing = ['Fds', '🏳️‍🌈', 'O que é, seu viado?', 'Da uma sugada aqui na minha rola']
 
 exports.objReact = [
