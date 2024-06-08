@@ -205,7 +205,7 @@ function start(bot) {
                 }
             })
 
-        await gnose.sendReactquoted(message.quotedMsg.sender.isMe, message.from)
+        await gnose.sendReactquoted(message, message.from)
             .then(async sendquoted => {
                 if (sendquoted !== undefined) {
                     if (message.body.includes('?')) {
