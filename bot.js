@@ -24,8 +24,6 @@ wa.create(config).then(bot => start(bot));
 
 function start(bot) {
     bot.onMessage(async message => {
-
-        console.log(message)
         if (await api.isBlock(message.author)) return;
 
         let timer, timeLog;
@@ -178,7 +176,9 @@ function start(bot) {
         }
 
         if (message.mediaData.type === 'sticker') {
+            console.log('sticker')
             if (message.mediaData.filehash === hashSapo) {
+                console.log('sapooo')
                 try {
                     await bot.deleteMessage(message.from, message.id)
                     return;
@@ -523,17 +523,16 @@ function start(bot) {
         }
 
         if (message.body.startsWith('!getlog')) {
-            await api.isOwner(message.author)
-                .then(async isOwner => {
-                    if (isOwner) {
-                        await bot.sendFile(message.from, 'logs/logfile.log', 'logfile.log', '• Arquivo de logs de eventos do bot!')
-                            .then(async _ => {
-                                await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o arquivo de log...`)
-                                return;
-                            })
-                        return;
-                    }
-                });
+            await api.isOwner(message.author).then(async isOwner => {
+                if (isOwner) {
+                    await bot.sendFile(message.from, 'logs/logfile.log', 'logfile.log', '• Arquivo de logs de eventos do bot!')
+                        .then(async _ => {
+                            await api.saveLogInfo(timeLog, `${message.notifyName} Solicitou o arquivo de log...`)
+                            return;
+                        })
+                    return;
+                }
+            });
         }
 
         if (message.body.startsWith('!setdesc')) {
