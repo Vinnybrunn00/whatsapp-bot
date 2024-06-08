@@ -216,7 +216,7 @@ function start(bot) {
                     await bot.reply(message.from, sendquoted, message.id)
                     return;
                 }
-            });
+            }).catch(_ => { });
 
         await gnose.sendMsgGnose(message.body.toLowerCase(), message.from)
             .then(async msgGnose => {
