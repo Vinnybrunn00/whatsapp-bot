@@ -12,6 +12,7 @@ const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
 const hashSapo = require('./constants/gnose_constants').hashWebpSapo
+const sendXing = require('./constants/gnose_constants').xing
 
 let api = new lib.BotApiUtils();
 let apiLpf = new lfp.LpfGroup(msg.baseUrlFut, msg.apiKeyFut)
@@ -203,6 +204,19 @@ function start(bot) {
                     return;
                 }
             })
+
+        await gnose.sendReactquoted(message.quotedMsg.sender.isMe, message.from)
+            .then(async sendquoted => {
+                if (sendquoted !== undefined) {
+                    if (message.body.includes('?')) {
+                        let _gen = Math.floor((Math.random() * sendXing.length))
+                        await bot.reply(message.from, sendXing[_gen], message.id)
+                        return;
+                    }
+                    await bot.reply(message.from, sendquoted, message.id)
+                    return;
+                }
+            });
 
         await gnose.sendMsgGnose(message.body.toLowerCase(), message.from)
             .then(async msgGnose => {
