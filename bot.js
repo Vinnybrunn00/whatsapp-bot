@@ -179,6 +179,12 @@ function start(bot) {
             if (message.mediaData.filehash === hashSapo) {
                 try {
                     await bot.deleteMessage(message.from, message.id)
+                        .then(async sapo => {
+                            if (sapo) {
+                                await bot.sendText(message.from, 'Sapo sendo estuprado deletado 👍')
+                                return;
+                            }
+                        }).catch(err => { });
                     return;
                 } catch (err) {
                     await api.saveLogError(timeLog, err, message.chat.name, 'Delete Sticker')
