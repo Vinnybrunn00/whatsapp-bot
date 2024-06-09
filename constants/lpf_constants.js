@@ -1,4 +1,5 @@
 
+exports.msgInter = ['inter', 'internacional', 'binter', 'int3rnacional', 'int3rn2cion2l', 'int3r']
 
 exports.objReactLpf = [
     {

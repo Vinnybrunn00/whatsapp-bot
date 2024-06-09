@@ -128,6 +128,14 @@ function start(bot) {
             });
         }
 
+        await apiLpf.deleteMessageOtt(message.body.toLowerCase(), message.author)
+            .then(async isDelete => {
+                if (isDelete !== undefined) {
+                    await bot.deleteMessage(message.from, message.id)
+                    return;
+                }
+            })
+
         if (message.body.startsWith('!br')) {
             await apiLpf.getRankingCamp().then(async infoCamp => {
                 if (infoCamp === undefined) return;
