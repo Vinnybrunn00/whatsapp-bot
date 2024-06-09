@@ -1,5 +1,5 @@
 
-exports.msgInter = ['inter', 'internacional', 'binter', 'int3rnacional', 'int3rn2cion2l', 'int3r']
+exports.msgGabi = ['gabigol', 'gabig0l', 'gabi', 'gab1gol']
 
 exports.objReactLpf = [
     {

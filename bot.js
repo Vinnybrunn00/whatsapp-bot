@@ -128,9 +128,9 @@ function start(bot) {
             });
         }
 
-        await apiLpf.deleteMessageOtt(message.body.toLowerCase(), message.author)
+        await apiLpf.delMessage(message.body.toLowerCase(), message.author)
             .then(async isDelete => {
-                if (isDelete !== undefined) {
+                if (isDelete && isDelete !== undefined) {
                     await bot.deleteMessage(message.from, message.id)
                     return;
                 }
