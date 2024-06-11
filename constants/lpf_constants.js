@@ -1,4 +1,5 @@
 
+exports.msgGabi = ['gabigol', 'gabig0l', 'gabi', 'gab1gol']
 
 exports.objReactLpf = [
     {
