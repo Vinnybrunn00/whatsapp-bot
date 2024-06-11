@@ -22,7 +22,7 @@ let util = new utils.Utils()
 
 wa.create(config).then(bot => start(bot));
 
-function start(bot) {
+async function start(bot) {
     bot.onMessage(async message => {
         if (await api.isBlock(message.author)) return;
 
@@ -715,7 +715,7 @@ function start(bot) {
     });
 
     // welcome
-    apiCoc.sendWelcome(bot)
+    await apiCoc.sendWelcome(bot)
         .then(async description => {
             if (description !== undefined) {
                 await bot.sendText(apiCoc.groupId, `${description}`)
