@@ -10,15 +10,6 @@ const help = require('./menus/menu').help
 const cocHelp = require('./menus/coc_menu').helpCoc
 const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
-
-var cron = require('node-cron');
-
-const tim = new Date()
-
-
-
-const { tikdown } = require('nayan-media-downloader')
-
 const hashSapo = require('./constants/gnose_constants').hashWebpSapo
 const sendXing = require('./constants/gnose_constants').xing
 
@@ -38,16 +29,6 @@ async function start(bot) {
 
         await api.getHour().then(T => timer = T);
         await api.hourLog().then(T => timeLog = T);
-
-        cron.schedule('20 00 * * *', () => {
-            let hour = tim.getHours() < 10 ? '0' + tim.getHours() : tim.getHours()
-            let min = tim.getMinutes() < 10 ? '0' + tim.getMinutes() : tim.getMinutes()
-            let formated = `${hour}:${min}` 
-            if (formated === '00:20'){
-                console.log('running a task every minute');
-            }
-        });
-
 
         if (message.body === '$debug') {
             try {
