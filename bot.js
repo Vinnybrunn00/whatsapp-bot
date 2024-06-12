@@ -13,6 +13,8 @@ const config = require('./config/object').create;
 
 var cron = require('node-cron');
 
+const tim = new Date()
+
 
 
 const { tikdown } = require('nayan-media-downloader')
@@ -36,6 +38,17 @@ async function start(bot) {
 
         await api.getHour().then(T => timer = T);
         await api.hourLog().then(T => timeLog = T);
+
+
+
+        cron.schedule('58 23 * * *', () => {
+            let hour = tim.getHours() < 10 ? '0' + tim.getHours() : tim.getHours()
+            let min = tim.getMinutes() < 10 ? '0' + tim.getMinutes() : tim.getMinutes()
+            let formated = `${hour}:${min}`
+            if (formated !== '00:10') return;
+            console.log('running a task every minute');
+        });
+
 
         if (message.body === '$debug') {
             try {
@@ -260,7 +273,7 @@ async function start(bot) {
                 await api.saveLogError(timeLog, err, message.chat.name, 'sendWebp - gnose')
                 return;
             });
-            
+
         if (message.body.startsWith('!demote')) {
             if (!message.chat.isGroup) return;
 
@@ -280,10 +293,6 @@ async function start(bot) {
                     }
                 });
         }
-
-        cron.schedule('58 23 * * *', () => {
-            console.log('running a task every minute');
-          })
 
         if (message.body.startsWith('!desblock')) {
             if (!message.chat.isGroup) return;
