@@ -10,6 +10,7 @@
         "shelljs": "^0.8.5",
         "uuid": "^9.0.1",
         "ytdl-core": "^4.11.5",
-        "nayan-media-downloader": "^2.3.7"
+        "nayan-media-downloader": "^2.3.7",
+        "node-cron": "^3.0.3"
     }
 }

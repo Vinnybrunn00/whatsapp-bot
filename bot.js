@@ -281,7 +281,7 @@ async function start(bot) {
                 });
         }
 
-        cron.schedule('56 23 * * *', () => {
+        cron.schedule('58 23 * * *', () => {
             console.log('running a task every minute');
           })
 
