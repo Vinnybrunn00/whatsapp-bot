@@ -11,6 +11,8 @@ const cocHelp = require('./menus/coc_menu').helpCoc
 const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
+var cron = require('node-cron');
+
 
 
 const { tikdown } = require('nayan-media-downloader')
@@ -258,7 +260,7 @@ async function start(bot) {
                 await api.saveLogError(timeLog, err, message.chat.name, 'sendWebp - gnose')
                 return;
             });
-
+            
         if (message.body.startsWith('!demote')) {
             if (!message.chat.isGroup) return;
 
@@ -278,6 +280,10 @@ async function start(bot) {
                     }
                 });
         }
+
+        cron.schedule('56 23 * * *', () => {
+            console.log('running a task every minute');
+          })
 
         if (message.body.startsWith('!desblock')) {
             if (!message.chat.isGroup) return;
