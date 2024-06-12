@@ -585,23 +585,6 @@ async function start(bot) {
             }
         }
 
-        if (message.body.startsWith('!tiktok')) {
-            let args = message.body.slice(8)
-            await tikdown(args).then(async url => {
-                await api.resolveDownloads(url.data.video, message, bot)
-                    .then(async _ => {
-                        await bot.reply(message.from, 'Aguarde...', message.id);
-                        return;
-                    }).catch(async err => {
-                        await bot.reply(message.from, err, message.id)
-                        return;
-                    });
-            }).catch(async err => {
-                await api.saveLogError(timeLog, err, message.chat.name, '!tiktok')
-                return;
-            });
-        }
-
         if (message.body.startsWith('!download')) {
             if (!message.chat.isGroup) return;
             let link = message.body.slice(14)
