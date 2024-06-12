@@ -588,11 +588,11 @@ async function start(bot) {
             await tikdown(args).then(async url => {
                 await api.resolveDownloads(url.data.video)
                     .then(async response => {
+                        console.log(response)
                         if (response) {
                             await bot.sendFile(message.from, 'src/video_tk/video.mp4')
                             return;
                         }
-                        console.log(response)
                     }).catch(async err => {
                         await bot.reply(message.from, err, message.id)
                         return;
