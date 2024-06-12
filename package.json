@@ -9,6 +9,7 @@
         "request": "^2.88.2",
         "shelljs": "^0.8.5",
         "uuid": "^9.0.1",
-        "ytdl-core": "^4.11.5"
+        "ytdl-core": "^4.11.5",
+        "nayan-media-downloader": "^2.3.7"
     }
 }

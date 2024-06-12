@@ -11,6 +11,8 @@ const cocHelp = require('./menus/coc_menu').helpCoc
 const lang = require('./menus/langs').langs
 const config = require('./config/object').create;
 
+const { tikdown } = require('nayan-media-downloader')
+
 const hashSapo = require('./constants/gnose_constants').hashWebpSapo
 const sendXing = require('./constants/gnose_constants').xing
 
@@ -579,6 +581,25 @@ async function start(bot) {
                 await api.saveLogError(timeLog, err, message.chat.name, '!register')
                 return;
             }
+        }
+
+        if (message.body.startsWith('!tiktok')) {
+            let args = message.body.slice(8)
+            await tikdown(args).then(async url => {
+                await api.resolveDownloads(url.data.video)
+                    .then(async response => {
+                        if (response) {
+                            await bot.sendFile(message.from, 'src/video_tk/video.mp4')
+                            return;
+                        }
+                    }).catch(async err => {
+                        await bot.reply(message.from, err, message.id)
+                        return;
+                    });
+            }).catch(async err => {
+                await api.saveLogError(timeLog, err, message.chat.name, '!tiktok')
+                return;
+            });
         }
 
         if (message.body.startsWith('!download')) {
