@@ -26,8 +26,6 @@ async function start(bot) {
     bot.onMessage(async message => {
         if (await api.isBlock(message.author)) return;
 
-        console.log(message)
-
         let timer, timeLog;
 
         await api.getHour().then(T => timer = T);
@@ -234,7 +232,7 @@ async function start(bot) {
 
         await gnose.sendMsgGnose(message.body.toLowerCase(), message.from)
             .then(async msgGnose => {
-                if (message.type === 'image' && message.type === 'video') return;
+                if (message.type === 'image' || message.type === 'video') return;
                 if (msgGnose !== undefined) {
                     await bot.reply(message.from, msgGnose, message.id)
                     return;
