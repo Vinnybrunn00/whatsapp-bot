@@ -26,6 +26,8 @@ async function start(bot) {
     bot.onMessage(async message => {
         if (await api.isBlock(message.author)) return;
 
+        console.log(message)
+
         let timer, timeLog;
 
         await api.getHour().then(T => timer = T);
