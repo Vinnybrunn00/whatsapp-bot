@@ -592,6 +592,7 @@ async function start(bot) {
                             await bot.sendFile(message.from, 'src/video_tk/video.mp4')
                             return;
                         }
+                        console.log(response)
                     }).catch(async err => {
                         await bot.reply(message.from, err, message.id)
                         return;
