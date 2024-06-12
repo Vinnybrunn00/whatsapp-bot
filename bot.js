@@ -39,12 +39,13 @@ async function start(bot) {
         await api.getHour().then(T => timer = T);
         await api.hourLog().then(T => timeLog = T);
 
-        cron.schedule('15 00 * * *', () => {
+        cron.schedule('20 00 * * *', () => {
             let hour = tim.getHours() < 10 ? '0' + tim.getHours() : tim.getHours()
             let min = tim.getMinutes() < 10 ? '0' + tim.getMinutes() : tim.getMinutes()
-            let formated = `${hour}:${min}`
-            if (formated !== '00:15') return;
-            console.log('running a task every minute');
+            let formated = `${hour}:${min}` 
+            if (formated === '00:20'){
+                console.log('running a task every minute');
+            }
         });
 
 
