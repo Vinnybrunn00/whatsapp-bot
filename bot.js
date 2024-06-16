@@ -129,11 +129,11 @@ async function start(bot) {
 
         await apiLpf.delMessage(message.body.toLowerCase(), message.author)
             .then(async isDelete => {
-                if (isDelete && isDelete !== undefined) {
+                if (isDelete) {
                     await bot.deleteMessage(message.from, message.id)
                     return;
                 }
-            })
+            });
 
         if (message.body.startsWith('!br')) {
             await apiLpf.getRankingCamp().then(async infoCamp => {

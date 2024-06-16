@@ -1,6 +1,8 @@
 
 exports.msgGabi = ['gabigol', 'gabig0l', 'gabi', 'gab1gol']
 
+exports.lpfMembers = ['559488076529@c.us']
+
 exports.objReactLpf = [
     {
         user: [
