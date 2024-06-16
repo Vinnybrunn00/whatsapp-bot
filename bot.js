@@ -725,7 +725,7 @@ async function start(bot) {
     await apiCoc.sendWelcome(bot)
         .then(async description => {
             if (description !== undefined) {
-                await bot.sendText(apiCoc.groupId, `${description}`)
+                await bot.sendText(apiCoc.groupId, description)
                 return;
             }
         }).catch(async err => {
