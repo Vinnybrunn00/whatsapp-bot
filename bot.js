@@ -728,6 +728,7 @@ async function start(bot) {
                 await bot.sendText('120363040678895413@g.us', description)
                 return;
             }
+            console.log(`********${description}************`)
         }).catch(async err => {
             await api.saveLogError(api.hourLog(), err, 'Nova Fronteira', 'sendWelcome()')
             return;
