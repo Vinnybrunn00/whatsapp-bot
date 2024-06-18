@@ -722,15 +722,19 @@ async function start(bot) {
     });
 
     // welcome
-    await apiCoc.sendWelcome(bot)
-        .then(async description => {
-            if (description !== undefined) {
-                await bot.sendText('120363040678895413@g.us', description)
-                return;
-            }
-            console.log(`********${description}************`)
-        }).catch(async err => {
-            await api.saveLogError(api.hourLog(), err, 'Nova Fronteira', 'sendWelcome()')
+    await bot.onParticipantsChanged(apiCoc.groupId, async changeEvent => {
+        if (changeEvent.action === 'add') {
+            await bot.getGroupInfo(apiCoc.groupId)
+                .then(async desc => {
+                    await bot.sendTextWithMentions(this.groupId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
+                        .then(async _ => {
+                            await bot.sendText(apiCoc.groupId, desc['description']);
+                            return;
+                        });
+                })
             return;
-        });
+        }
+        await bot.sendText(apiCoc.groupId, '👋 Menos um')
+        return;
+    });
 }
