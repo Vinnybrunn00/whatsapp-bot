@@ -703,6 +703,8 @@ async function start(bot) {
 
         await apiLpf.reactLpf(message.author)
             .then(async emoji => {
+                let isReac = await api.isReact()
+                if (!isReac) return;
                 if (emoji !== undefined) {
                     await bot.react(message.id, emoji)
                     return;
