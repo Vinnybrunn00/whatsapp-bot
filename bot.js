@@ -726,14 +726,22 @@ async function start(bot) {
     // welcome
     await bot.onParticipantsChanged(apiCoc.groupId, async changeEvent => {
         if (changeEvent.action === 'add') {
-            await bot.getGroupInfo(apiCoc.groupId)
-                .then(async desc => {
-                    await bot.sendTextWithMentions(this.groupId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
-                        .then(async _ => {
-                            await bot.sendText(apiCoc.groupId, desc['description']);
+            await bot.sendTextWithMentions(apiCoc.groupId, `Bem vindo, *@${changeEvent.who.replace('@c.us', '')}*`)
+                .then(async _ => {
+                    await bot.getGroupInfo(apiCoc.groupId)
+                        .then(async desc => {
+                            if (desc !== undefined) {
+                                await bot.sendText(apiCoc.groupId, desc['description']);
+                                return;
+                            }
+                        }).catch(async err => {
+                            await api.saveLogError(timeLog, err, message.chat.name, 'getGroupInfo() - welcome')
                             return;
                         });
-                })
+                }).catch(async err => {
+                    await api.saveLogError(timeLog, err, message.chat.name, 'sendTextWithMentions() - welcome')
+                    return;
+                });
             return;
         }
         await bot.sendText(apiCoc.groupId, '👋 Menos um')
