@@ -3,6 +3,7 @@ const msg = require('./constants/constants').msg
 const lib = require('./lib/api');
 const clash = require('./lib/clash')
 const lfp = require('./lib/lpf_group')
+const stsetGroup = require('./lib/startset_group')
 const utils = require('./utils/utils')
 const lib2 = require('./lib/gnose_group');
 const { exec } = require('child_process');
@@ -17,6 +18,7 @@ let api = new lib.BotApiUtils();
 let apiLpf = new lfp.LpfGroup(msg.baseUrlFut, msg.apiKeyFut)
 let gnose = new lib2.GnoseGroup('557488059907-1620062542@g.us')
 let apiCoc = new clash.ApiClashOfClans(msg.baseUrl, msg.apiKeyCoC, '120363040678895413@g.us')
+let startset = new stsetGroup.StartsetGroup()
 let util = new utils.Utils()
 
 wa.create(config).then(bot => start(bot));
@@ -181,6 +183,19 @@ async function start(bot) {
                     await api.saveLogError(timeLog, err, message.chat.name, '!artilheiros')
                     return;
                 });
+        }
+
+        // send lyrics music
+        if (message.body.startsWith('!lyrics')) {
+            await startset.sendLyrics(message.body.slice(8))
+                .then(async response => {
+                    if (response !== undefined) {
+                        await bot.reply(message.from, response, message.id)
+                        return;
+                    }
+                }).catch(async err => {
+                    await bot.reply(message.from, err, message.id)
+                })
         }
 
         if (message.mediaData.type === 'sticker') {
