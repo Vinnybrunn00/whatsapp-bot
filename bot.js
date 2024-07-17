@@ -244,15 +244,17 @@ async function start(bot) {
                 }
             }).catch(_ => { });
 
-        await gnose.sendMsgGnose(message.body.toLowerCase(), message.from)
-            .then(async msgGnose => {
-                if (message.type === 'image' || message.type === 'video') return;
-                if (msgGnose !== undefined) {
-                    await bot.reply(message.from, msgGnose, message.id)
-                    return;
-                }
-            });
-
+        if (message.type !== 'image' || message.type !== 'video') {
+            await gnose.sendMsgGnose(message.body.toLowerCase(), message.from)
+                .then(async msgGnose => {
+                    if (msgGnose !== undefined) {
+                        await bot.reply(message.from, msgGnose, message.id)
+                        return;
+                    }
+                });
+            return;
+        }
+        
         await gnose.sendWebp(message.body.toLowerCase(), message)
             .then(async webp => {
                 if (webp !== undefined) {
