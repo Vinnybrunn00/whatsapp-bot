@@ -215,6 +215,14 @@ async function start(bot) {
             }
         }
 
+        await gnose.policeSendMsg(message.body.toLowerCase(), message.from)
+            .then(async plcmsg => {
+                if (plcmsg != undefined) {
+                    await bot.reply(message.from, plcmsg, message.id)
+                    return;
+                }
+            });
+
         await gnose.sendMentionGnose(message.body, message.from)
             .then(async mention => {
                 if (mention !== undefined) {
@@ -244,17 +252,14 @@ async function start(bot) {
                 }
             }).catch(_ => { });
 
-        if (message.type !== 'image' || message.type !== 'video') {
-            await gnose.sendMsgGnose(message.body.toLowerCase(), message.from)
-                .then(async msgGnose => {
-                    if (msgGnose !== undefined) {
-                        await bot.reply(message.from, msgGnose, message.id)
-                        return;
-                    }
-                });
-            return;
-        }
-        
+        await gnose.sendMsgGnose(message.body.toLowerCase(), message.from, message.type)
+            .then(async msgGnose => {
+                if (msgGnose !== undefined) {
+                    await bot.reply(message.from, msgGnose, message.id)
+                    return;
+                }
+            });
+
         await gnose.sendWebp(message.body.toLowerCase(), message)
             .then(async webp => {
                 if (webp !== undefined) {
