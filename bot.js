@@ -233,6 +233,14 @@ async function start(bot) {
             }
         }
 
+        await gnose.interrogation(message.body, message.from)
+            .then(async interr => {
+                if (interr !== undefined) {
+                    await bot.reply(message.from, interr, message.id)
+                    return;
+                }
+            });
+
         await gnose.policeSendMsg(message.body.toLowerCase(), message.from)
             .then(async plcmsg => {
                 if (plcmsg != undefined) {
