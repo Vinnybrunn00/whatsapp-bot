@@ -28,7 +28,7 @@ exports.msgGnose = ['Ei mocinho, palavrão não 😤', 'Para de xingar, seu viad
 exports.impr = ['porra', 'vai se fuder', 'puta', 'vsf', 'desgraça', 'pqp', 'desgraca', 'vtnc']
 exports.sendQuotedMsg = ['Ta me marcando pq, seu viado?', 'Não falo com viado não', 'Se me marcar de novo, é viado.']
 exports.xing = ['Fds', '🏳️‍🌈', 'O que é, seu viado?', 'Da uma sugada aqui na minha rola']
-exports.interrog = ['Ta com dúvida, a bichinha...', 'Ta perdida, princesa?']
+exports.interrog = ['Ta com dúvida, a bichinha...', 'Ta perdida, princesa?', 'Ta com dúvida, vai no google']
 
 exports.objReact = [
     {
@@ -38,6 +38,7 @@ exports.objReact = [
             ['557481453885@c.us', '🫣'],
             ['557481456725@c.us', '🧌'],
             ['557488092219@c.us', '🚬'],
+            ['557481333619@c.us', '🦌'],
         ]
     }
 ]
