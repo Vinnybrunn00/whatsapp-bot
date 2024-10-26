@@ -1,3 +1,21 @@
 hubberBot v2.0 log-file
 ---------------------------------------------------
 
+[object Promise]: ERROR - [> Error: Command failed: tesseract "/home/vinny/wa/whatsapp-bot/media/EE593C9F72DE76448ADBDA683D666E35.jpeg" stdout -l por
+Error opening data file /usr/share/tesseract-ocr/5/tessdata/por.traineddata
+Please make sure the TESSDATA_PREFIX environment variable is set to your "tessdata" directory.
+Failed loading language 'por'
+Tesseract couldn't load any languages!
+Could not initialize tesseract.
+ <] "Teste Bot" ➜ extractText()
+2024.010.26 14.00.17: INFO - [log] ➜ Vinícius Bruno 🤓 Scanneou uma imagem...
+[object Promise]: ERROR - [> Error: Command failed: tesseract "/home/vinny/wa/whatsapp-bot/media/89D32B9FD03DE17C7E5E293592BF0BDC.jpeg" stdout -l por
+Error opening data file /usr/share/tesseract-ocr/5/tessdata/por.traineddata
+Please make sure the TESSDATA_PREFIX environment variable is set to your "tessdata" directory.
+Failed loading language 'por'
+Tesseract couldn't load any languages!
+Could not initialize tesseract.
+ <] "Teste Bot" ➜ extractText()
+2024.010.26 14.00.37: INFO - [log] ➜ Vinícius Bruno 🤓 Scanneou uma imagem...
+[object Promise]: ERROR - [> Error: No video id found: ttps://youtu.be/M-wjSr0eDoE?si=THePt8uAk-PipEQq <] "Teste Bot" ➜ downloadYt()
+2024.010.26 14.04.59: INFO - [log] ➜ Vinícius Bruno 🤓 Baixou ttps://youtu.be/M-wjSr0eDoE?si=THePt8uAk-PipEQq...
