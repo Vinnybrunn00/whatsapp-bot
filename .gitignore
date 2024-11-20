@@ -1,14 +1,5 @@
 
 package-lock.json
-node_modules
-
-BOT.data.json
-
-# managed by open-wa
-**.data.json
-**.node-persist**
-**_IGNORE_**
-# end managed by open-wa
 
 voice/voice.mp3
 video/download.mp4
@@ -19,3 +10,17 @@ tests
 test.js
 tester.js
 /test
+package.json
+
+logs/logfile.log
+
+node_modules
+
+BOT.data.json
+
+# managed by open-wa
+**.data.json
+**.node-persist**
+**_IGNORE_**
+# end managed by open-wa
+
