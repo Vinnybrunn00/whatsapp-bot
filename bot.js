@@ -28,7 +28,7 @@ wa.create(config).then(bot => start(bot));
 async function start(bot) {
     bot.onMessage(async message => {
 
-        console.log(message);
+        console.log(message.chat);
 
         return;
 
