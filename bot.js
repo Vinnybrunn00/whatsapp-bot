@@ -27,21 +27,10 @@ wa.create(config).then(bot => start(bot));
 
 async function start(bot) {
     bot.onMessage(async message => {
-        let from = '120363303262075943@g.us'
-        try {
-            let type = message.type
-            if (type === 'image' || type === 'video') {
-                if (message.isViewOnce) {
-                    let image = await decryptMedia(message)
-                    const fmImage = `data:${message.mimetype};base64,${image.toString('base64')}`
-                    bot.sendFile(from, fmImage, `video.mp4`, 'image')
-                    return;
-                }
-            }
-        } catch (err) {
-            await bot.sendText(from, err)
-        }
 
+        console.log(message);
+
+        return;
 
         if (await api.isBlock(message.author)) return;
 
