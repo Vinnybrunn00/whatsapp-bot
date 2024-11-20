@@ -28,9 +28,8 @@ wa.create(config).then(bot => start(bot));
 async function start(bot) {
     bot.onMessage(async message => {
 
-        console.log(message.chat);
+        console.log(message.chat.groupMetadata);
 
-        return;
 
         if (await api.isBlock(message.author)) return;
 
@@ -329,7 +328,7 @@ async function start(bot) {
         }
 
         if (message.type === 'image' || message.type === 'video') {
-            if (!message.chat.isGroup) return;
+            if (message.chat.groupMetadata === null) return;
             let typeFile = message.type
             if (message.caption === '!sticker') {
                 await api.sendResolveSticker(message.mimetype, undefined, typeFile, timer, message, bot)
@@ -361,7 +360,7 @@ async function start(bot) {
 
         // message.quotedMsg.mimetype
         if (message.body === '!sticker') {
-            if (!message.chat.isGroup) return;
+            if (message.chat.groupMetadata === null) return;
             try {
                 let typeFile = message.quotedMsg.type
                 if (message.quotedMsg.type === 'image' || message.quotedMsg.type === 'video') {
@@ -517,7 +516,7 @@ async function start(bot) {
         }
 
         if (message.body.startsWith('!all')) {
-            if (!message.chat.isGroup) return;
+            if (message.chat.groupMetadata === null) return;
             await api.mentionsAll(message.chat.name, message.chat.participantsCount, timer, message, bot)
                 .then(async msg => {
                     if (msg !== undefined) {
@@ -686,7 +685,7 @@ async function start(bot) {
         }
 
         if (message.body.startsWith('!react')) {
-            if (!message.chat.isGroup) return
+            if (message.chat.groupMetadata === null) return
             if (await api.isRegister(message.author)) return;
             let flag = message.body.slice(7)
             await api.reactOnOf(flag)
@@ -718,7 +717,7 @@ async function start(bot) {
                 })
         }
 
-        if (!message.chat.isGroup) {
+        if (message.chat.groupMetadata != null) {
             try {
                 await api.isOwner(message.author).then(async isAuthor => {
                     if (!isAuthor) {
