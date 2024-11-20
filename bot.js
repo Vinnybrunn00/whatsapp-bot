@@ -717,7 +717,7 @@ async function start(bot) {
                 })
         }
 
-        if (message.chat.groupMetadata != null) {
+        if (message.chat.groupMetadata == null) {
             try {
                 await api.isOwner(message.author).then(async isAuthor => {
                     if (!isAuthor) {
