@@ -12,6 +12,7 @@
         "ytdl-core": "^4.11.5",
         "nayan-media-downloader": "^2.3.7",
         "node-cron": "^3.0.3",
-        "lyria-npm": "^1.0.10"
+        "lyria-npm": "^1.0.10",
+        "@google/generative-ai": "^0.21.0"
     }
 }
